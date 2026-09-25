@@ -217,6 +217,7 @@
 <div class="shell">
   <div>
     <div class="kid-picker" id="kidPicker"></div>
+    <button id="switchKidBtn" class="lock-btn" style="display:none; width:auto; border-radius:999px; padding:0 12px; font-size:12.5px; font-weight:700; gap:5px; margin:-12px 0 16px;"></button>
 
     <div class="stat-strip">
       <div class="stat-card xp"><div class="num" id="statXp">0</div><div class="lbl" id="statXpLbl"></div></div>
@@ -366,6 +367,15 @@
   </div>
 </div>
 
+<div class="modal-bg" id="whoAreYouOverlay" style="z-index:70; background:rgba(10,7,24,0.92);">
+  <div class="modal" style="max-width:380px; background:transparent; box-shadow:none; text-align:center;">
+    <div class="brand-mark" style="width:52px; height:52px; font-size:26px; margin:0 auto 14px;">🗺️</div>
+    <h3 id="whoAreYouTitle" style="color:#fff; font-size:22px;"></h3>
+    <p class="hint" id="whoAreYouHint" style="color:#bcb3e0;"></p>
+    <div id="whoAreYouList" style="display:flex; flex-direction:column; gap:10px; margin-top:16px;"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -479,7 +489,9 @@
       manageBadgesBtn: "Manage badges", manageBadgesTitle: "Manage badges", manageBadgesHint: "Set the emoji, name, and XP needed for each badge.",
       addBadgeBtn: "+ Add badge", toastBadgeNameRequired: "Give this badge a name.", toastBadgeXpInvalid: "Enter a valid XP amount.",
       toastBadgeAdded: "Badge added!", toastBadgeSaved: "Saved.", toastBadgeUnlocked: "New badge: {name}!",
-      badgeUnlockedNote: "New badge: {name}!"
+      badgeUnlockedNote: "New badge: {name}!",
+      whoAreYouTitle: "Who's doing chores today?", whoAreYouHint: "Tap your name to see your own quests.",
+      switchKidBtn: "🔁 Not you?"
     }},
     ja: { name: "日本語", dir: "ltr", strings: {
       subtitle: "家族のタスクボード", kidMode: "こどもモード", parentMode: "保護者モード",
@@ -517,7 +529,9 @@
       manageBadgesBtn: "バッジの管理", manageBadgesTitle: "バッジの管理", manageBadgesHint: "各バッジの絵文字・名前・必要XPを設定します。",
       addBadgeBtn: "+ バッジを追加", toastBadgeNameRequired: "バッジの名前を入力してください。", toastBadgeXpInvalid: "正しいXPの数値を入力してください。",
       toastBadgeAdded: "バッジを追加しました！", toastBadgeSaved: "保存しました。", toastBadgeUnlocked: "新しいバッジ：{name}！",
-      badgeUnlockedNote: "新しいバッジ：{name}！"
+      badgeUnlockedNote: "新しいバッジ：{name}！",
+      whoAreYouTitle: "今日は誰がクエストする？", whoAreYouHint: "自分の名前をタップしてね。",
+      switchKidBtn: "🔁 ちがう人？"
     }},
     fr: { name: "Français", dir: "ltr", strings: {
       subtitle: "Tableau des tâches familiales", kidMode: "Mode enfant", parentMode: "Mode parent",
@@ -555,7 +569,9 @@
       manageBadgesBtn: "Gérer les badges", manageBadgesTitle: "Gérer les badges", manageBadgesHint: "Définis l'emoji, le nom et les XP nécessaires pour chaque badge.",
       addBadgeBtn: "+ Ajouter un badge", toastBadgeNameRequired: "Donne un nom à ce badge.", toastBadgeXpInvalid: "Entre un nombre d'XP valide.",
       toastBadgeAdded: "Badge ajouté !", toastBadgeSaved: "Enregistré.", toastBadgeUnlocked: "Nouveau badge : {name} !",
-      badgeUnlockedNote: "Nouveau badge : {name} !"
+      badgeUnlockedNote: "Nouveau badge : {name} !",
+      whoAreYouTitle: "Qui fait ses quêtes aujourd'hui ?", whoAreYouHint: "Touche ton prénom pour voir tes propres quêtes.",
+      switchKidBtn: "🔁 Ce n'est pas toi ?"
     }},
     es: { name: "Español", dir: "ltr", strings: {
       subtitle: "Tablero de tareas familiares", kidMode: "Modo niño", parentMode: "Modo padres",
@@ -593,7 +609,9 @@
       manageBadgesBtn: "Gestionar insignias", manageBadgesTitle: "Gestionar insignias", manageBadgesHint: "Define el emoji, el nombre y los XP necesarios para cada insignia.",
       addBadgeBtn: "+ Añadir insignia", toastBadgeNameRequired: "Ponle un nombre a esta insignia.", toastBadgeXpInvalid: "Introduce una cantidad de XP válida.",
       toastBadgeAdded: "¡Insignia añadida!", toastBadgeSaved: "Guardado.", toastBadgeUnlocked: "¡Nueva insignia: {name}!",
-      badgeUnlockedNote: "¡Nueva insignia: {name}!"
+      badgeUnlockedNote: "¡Nueva insignia: {name}!",
+      whoAreYouTitle: "¿Quién hace misiones hoy?", whoAreYouHint: "Toca tu nombre para ver tus propias misiones.",
+      switchKidBtn: "🔁 ¿No eres tú?"
     }},
     ko: { name: "한국어", dir: "ltr", strings: {
       subtitle: "가족 할일 보드", kidMode: "어린이 모드", parentMode: "부모 모드",
@@ -631,7 +649,9 @@
       manageBadgesBtn: "배지 관리", manageBadgesTitle: "배지 관리", manageBadgesHint: "각 배지의 이모지, 이름, 필요한 XP를 설정하세요.",
       addBadgeBtn: "+ 배지 추가", toastBadgeNameRequired: "이 배지의 이름을 입력하세요.", toastBadgeXpInvalid: "올바른 XP 값을 입력하세요.",
       toastBadgeAdded: "배지가 추가되었어요!", toastBadgeSaved: "저장되었어요.", toastBadgeUnlocked: "새 배지: {name}!",
-      badgeUnlockedNote: "새 배지: {name}!"
+      badgeUnlockedNote: "새 배지: {name}!",
+      whoAreYouTitle: "오늘은 누가 할 일을 하나요?", whoAreYouHint: "내 이름을 탭해서 내 퀘스트를 확인하세요.",
+      switchKidBtn: "🔁 다른 사람인가요?"
     }},
     "zh-CN": { name: "中文（简体）", dir: "ltr", strings: {
       subtitle: "家庭任务板", kidMode: "儿童模式", parentMode: "家长模式",
@@ -669,7 +689,9 @@
       manageBadgesBtn: "管理徽章", manageBadgesTitle: "管理徽章", manageBadgesHint: "为每个徽章设置表情符号、名称和所需的XP。",
       addBadgeBtn: "+ 添加徽章", toastBadgeNameRequired: "请给这个徽章起个名字。", toastBadgeXpInvalid: "请输入有效的XP数值。",
       toastBadgeAdded: "徽章已添加！", toastBadgeSaved: "已保存。", toastBadgeUnlocked: "新徽章：{name}！",
-      badgeUnlockedNote: "新徽章：{name}！"
+      badgeUnlockedNote: "新徽章：{name}！",
+      whoAreYouTitle: "今天是谁来做任务？", whoAreYouHint: "点击你的名字查看你自己的任务。",
+      switchKidBtn: "🔁 不是你？"
     }},
     hi: { name: "हिन्दी", dir: "ltr", strings: {
       subtitle: "पारिवारिक कार्य बोर्ड", kidMode: "बच्चों का मोड", parentMode: "अभिभावक मोड",
@@ -707,7 +729,9 @@
       manageBadgesBtn: "बैज प्रबंधित करें", manageBadgesTitle: "बैज प्रबंधित करें", manageBadgesHint: "हर बैज के लिए इमोजी, नाम और ज़रूरी XP सेट करें।",
       addBadgeBtn: "+ बैज जोड़ें", toastBadgeNameRequired: "इस बैज का नाम डालें।", toastBadgeXpInvalid: "सही XP मान डालें।",
       toastBadgeAdded: "बैज जोड़ा गया!", toastBadgeSaved: "सेव हो गया।", toastBadgeUnlocked: "नया बैज: {name}!",
-      badgeUnlockedNote: "नया बैज: {name}!"
+      badgeUnlockedNote: "नया बैज: {name}!",
+      whoAreYouTitle: "आज काम कौन करेगा?", whoAreYouHint: "अपनी क्वेस्ट देखने के लिए अपना नाम टैप करें।",
+      switchKidBtn: "🔁 यह आप नहीं हैं?"
     }},
     de: { name: "Deutsch", dir: "ltr", strings: {
       subtitle: "Familien-Aufgabenboard", kidMode: "Kindermodus", parentMode: "Elternmodus",
@@ -745,7 +769,9 @@
       manageBadgesBtn: "Abzeichen verwalten", manageBadgesTitle: "Abzeichen verwalten", manageBadgesHint: "Lege Emoji, Namen und benötigte XP für jedes Abzeichen fest.",
       addBadgeBtn: "+ Abzeichen hinzufügen", toastBadgeNameRequired: "Gib diesem Abzeichen einen Namen.", toastBadgeXpInvalid: "Gib einen gültigen XP-Wert ein.",
       toastBadgeAdded: "Abzeichen hinzugefügt!", toastBadgeSaved: "Gespeichert.", toastBadgeUnlocked: "Neues Abzeichen: {name}!",
-      badgeUnlockedNote: "Neues Abzeichen: {name}!"
+      badgeUnlockedNote: "Neues Abzeichen: {name}!",
+      whoAreYouTitle: "Wer erledigt heute Aufgaben?", whoAreYouHint: "Tippe auf deinen Namen, um deine eigenen Quests zu sehen.",
+      switchKidBtn: "🔁 Nicht du?"
     }},
     it: { name: "Italiano", dir: "ltr", strings: {
       subtitle: "Bacheca dei compiti di famiglia", kidMode: "Modalità bambino", parentMode: "Modalità genitore",
@@ -783,7 +809,9 @@
       manageBadgesBtn: "Gestisci distintivi", manageBadgesTitle: "Gestisci distintivi", manageBadgesHint: "Imposta emoji, nome e XP necessari per ogni distintivo.",
       addBadgeBtn: "+ Aggiungi distintivo", toastBadgeNameRequired: "Dai un nome a questo distintivo.", toastBadgeXpInvalid: "Inserisci un valore XP valido.",
       toastBadgeAdded: "Distintivo aggiunto!", toastBadgeSaved: "Salvato.", toastBadgeUnlocked: "Nuovo distintivo: {name}!",
-      badgeUnlockedNote: "Nuovo distintivo: {name}!"
+      badgeUnlockedNote: "Nuovo distintivo: {name}!",
+      whoAreYouTitle: "Chi fa le faccende oggi?", whoAreYouHint: "Tocca il tuo nome per vedere le tue missioni.",
+      switchKidBtn: "🔁 Non sei tu?"
     }},
     pt: { name: "Português", dir: "ltr", strings: {
       subtitle: "Quadro de tarefas da família", kidMode: "Modo criança", parentMode: "Modo responsável",
@@ -821,7 +849,9 @@
       manageBadgesBtn: "Gerenciar emblemas", manageBadgesTitle: "Gerenciar emblemas", manageBadgesHint: "Defina o emoji, o nome e o XP necessário para cada emblema.",
       addBadgeBtn: "+ Adicionar emblema", toastBadgeNameRequired: "Dê um nome a esse emblema.", toastBadgeXpInvalid: "Digite um valor de XP válido.",
       toastBadgeAdded: "Emblema adicionado!", toastBadgeSaved: "Salvo.", toastBadgeUnlocked: "Novo emblema: {name}!",
-      badgeUnlockedNote: "Novo emblema: {name}!"
+      badgeUnlockedNote: "Novo emblema: {name}!",
+      whoAreYouTitle: "Quem vai fazer as tarefas hoje?", whoAreYouHint: "Toque no seu nome para ver suas próprias missões.",
+      switchKidBtn: "🔁 Não é você?"
     }}
   };
   const LANG_ORDER = ["en", "ja", "fr", "es", "ko", "zh-CN", "hi", "de", "it", "pt"];
@@ -959,6 +989,10 @@
     document.getElementById("newKidNameLbl").textContent = t("newKidNameLbl");
     document.getElementById("addKidBtn").textContent = t("addKidBtn");
     document.getElementById("closeKidsModalBtn").textContent = t("cancel");
+    document.getElementById("whoAreYouTitle").textContent = t("whoAreYouTitle");
+    document.getElementById("whoAreYouHint").textContent = t("whoAreYouHint");
+    document.getElementById("switchKidBtn").textContent = t("switchKidBtn");
+    if (document.getElementById("whoAreYouOverlay").classList.contains("open")) openWhoAreYouOverlay();
     document.getElementById("badgesViewTitle").textContent = t("statBadges");
     document.getElementById("badgesViewHint").textContent = t("badgesViewHint");
     document.getElementById("closeBadgesViewBtn").textContent = t("cancel");
@@ -990,11 +1024,13 @@
     document.getElementById("manageKidsBtn").style.display = r === "parent" ? "inline-block" : "none";
     document.getElementById("manageBadgesBtn").style.display = r === "parent" ? "inline-block" : "none";
     document.getElementById("lockBtn").style.display = r === "parent" ? "flex" : "none";
-    if (r === "child") parentUnlocked = false;
+    document.getElementById("switchKidBtn").style.display = (r === "child" && kidsList().length > 1) ? "inline-flex" : "none";
+    if (r === "child") { parentUnlocked = false; }
     renderKidPicker();
     renderTasks();
     renderStats();
     renderChat();
+    maybeShowWhoAreYou();
   }
 
   function lockParentMode() {
@@ -1003,12 +1039,66 @@
     toast(t("unlock") === "Unlock" ? "Locked" : t("unlock"));
   }
 
+  // ================= "who are you" kid chooser (child mode, per device) =================
+  function getSavedKidId() {
+    try { return localStorage.getItem("questlog_activeKid"); } catch (e) { return null; }
+  }
+  function saveActiveKidId(id) {
+    try { localStorage.setItem("questlog_activeKid", id); } catch (e) { /* ignore */ }
+  }
+  function clearSavedKidId() {
+    try { localStorage.removeItem("questlog_activeKid"); } catch (e) { /* ignore */ }
+  }
+
+  function maybeShowWhoAreYou() {
+    if (role !== "child") { closeWhoAreYouOverlay(); return; }
+    const list = kidsList();
+    if (!list.length) { closeWhoAreYouOverlay(); return; }
+    const saved = getSavedKidId();
+    if (saved && kidsCache[saved]) {
+      activeKid = saved;
+      closeWhoAreYouOverlay();
+      renderKidPicker(); renderTasks(); renderStats(); renderChat();
+    } else {
+      openWhoAreYouOverlay();
+    }
+  }
+
+  function openWhoAreYouOverlay() {
+    const wrap = document.getElementById("whoAreYouList");
+    wrap.innerHTML = "";
+    kidsList().forEach(k => {
+      const btn = document.createElement("button");
+      btn.className = "btn";
+      btn.style.cssText = "background:var(--panel); color:var(--ink); padding:14px 16px; border-radius:14px; font-size:16px; display:flex; align-items:center; gap:12px; justify-content:flex-start;";
+      btn.innerHTML = `<span class="kid-avatar" style="width:34px; height:34px; font-size:18px;">${escapeHtml(k.emoji)}</span> ${escapeHtml(k.name)}`;
+      btn.onclick = () => {
+        activeKid = k.id;
+        saveActiveKidId(k.id);
+        closeWhoAreYouOverlay();
+        renderKidPicker(); renderTasks(); renderStats(); renderChat();
+      };
+      wrap.appendChild(btn);
+    });
+    document.getElementById("whoAreYouOverlay").classList.add("open");
+  }
+  function closeWhoAreYouOverlay() { document.getElementById("whoAreYouOverlay").classList.remove("open"); }
+
+  function switchKid() {
+    clearSavedKidId();
+    activeKid = null;
+    openWhoAreYouOverlay();
+  }
+
   function renderKidPicker() {
     const el = document.getElementById("kidPicker");
     el.innerHTML = "";
     const list = kidsList();
     if (!list.length) return;
-    if (!activeKid || !kidsCache[activeKid]) activeKid = list[0].id;
+    // In parent mode it's fine to default to the first kid's tab. In child
+    // mode, leave activeKid unset until the "who are you" chooser picks one —
+    // auto-defaulting here would briefly show the wrong kid's data.
+    if (role === "parent" && (!activeKid || !kidsCache[activeKid])) activeKid = list[0].id;
     list.forEach(k => {
       if (role === "child" && k.id !== activeKid) return;
       const chip = document.createElement("div");
@@ -1593,12 +1683,14 @@
       db.collection("kids").onSnapshot((snap) => {
         kidsCache = {};
         (snap.docs || snap || []).forEach(d => { kidsCache[d.id] = d.data ? d.data() : d; });
-        if (activeKid && !kidsCache[activeKid]) activeKid = null;
+        if (activeKid && !kidsCache[activeKid]) { activeKid = null; clearSavedKidId(); }
+        document.getElementById("switchKidBtn").style.display = (role === "child" && kidsList().length > 1) ? "inline-flex" : "none";
         renderKidPicker();
         renderTasks();
         renderStats();
         renderChat();
         if (document.getElementById("kidsModalBg").classList.contains("open")) renderKidsModalList();
+        maybeShowWhoAreYou();
       });
     } catch (e) { console.error("kids subscription failed", e); }
 
@@ -1691,6 +1783,7 @@
     openPinModal(parentPin ? "enter" : "set");
   });
   document.getElementById("lockBtn").addEventListener("click", lockParentMode);
+  document.getElementById("switchKidBtn").addEventListener("click", switchKid);
   document.getElementById("statBadgesCard").addEventListener("click", openBadgesViewModal);
   document.getElementById("statBadgesCard").addEventListener("keydown", (e) => { if (e.key === "Enter") openBadgesViewModal(); });
   document.getElementById("closeBadgesViewBtn").addEventListener("click", closeBadgesViewModal);
