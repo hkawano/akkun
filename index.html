@@ -210,6 +210,7 @@
       <button data-role="child" id="roleChildBtn"></button>
       <button data-role="parent" id="roleParentBtn"></button>
     </div>
+    <button id="howToBtn" style="display:none; background: rgba(255,255,255,0.08); color: #e6e0ff; border: 1px solid var(--line-soft); border-radius: 999px; font-family: inherit; font-weight: 700; font-size: 12.5px; padding: 8px 13px; cursor: pointer;"></button>
     <button class="lock-btn" id="lockBtn" title="Lock parent mode" style="display:none;">🔒</button>
   </div>
 </div>
@@ -348,6 +349,16 @@
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="closeKidsModalBtn"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="howToModalBg">
+  <div class="modal" style="max-width:460px;">
+    <h3 id="howToModalTitle"></h3>
+    <ol id="howToStepsList" style="margin:0 0 16px; padding-left:20px; display:flex; flex-direction:column; gap:12px;"></ol>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="closeHowToBtn"></button>
     </div>
   </div>
 </div>
@@ -518,7 +529,9 @@
       switchKidBtn: "🔁 Not you?",
       proposeTaskBtn: "✋ I did something!", proposeModalTitle: "Tell your parent what you did",
       proposeModalHint: "Send it in and your parent will review it.", proposeSubmitBtn: "Send to parent",
-      toastProposedSent: "Sent to your parent! 🎉", proposedByKidNote: "🙋 Kid suggested {xp} XP", awardXpLbl: "Award XP:"
+      toastProposedSent: "Sent to your parent! 🎉", proposedByKidNote: "🙋 Kid suggested {xp} XP", awardXpLbl: "Award XP:",
+      howToBtn: "❓ How to use", howToModalTitle: "How to use QuestLog",
+      howToSteps: [{"title": "Switch between Kid mode and Parent mode", "desc": "Tap the toggle at the top. Parent mode asks for your PIN — set one the first time you use it."}, {"title": "Add or rename kids", "desc": "In Parent mode, tap “Manage kids” to add a child, change their name or emoji, or remove one."}, {"title": "Create a quest", "desc": "Tap “New quest,” pick who it's for, give it a title and XP value, then tap “Create quest.”"}, {"title": "Kids mark quests done", "desc": "In Kid mode, they tap “Mark done” on an assigned quest, or “✋ I did something!” to report something you didn't assign."}, {"title": "Review and approve", "desc": "In Parent mode, open “Waiting on a grown-up.” Adjust the Award XP number if you like, then tap Approve or Send back."}, {"title": "Set up badges", "desc": "Tap “Manage badges” to create badges with an emoji, name, and the XP needed to unlock them."}, {"title": "Family chat", "desc": "Everyone can send messages, quick stamps, emoji, or a voice clip. Approved and sent-back quests post automatically as cards."}, {"title": "Change the language", "desc": "Use the language dropdown at the top any time — everyone's view updates instantly."}]
     }},
     ja: { name: "日本語", dir: "ltr", strings: {
       subtitle: "家族のタスクボード", kidMode: "こどもモード", parentMode: "保護者モード",
@@ -561,7 +574,9 @@
       switchKidBtn: "🔁 ちがう人？",
       proposeTaskBtn: "✋ やったよ！", proposeModalTitle: "やったことを伝えよう",
       proposeModalHint: "送ると保護者が確認します。", proposeSubmitBtn: "保護者に送る",
-      toastProposedSent: "送りました！🎉", proposedByKidNote: "🙋 こどもの提案：{xp} XP", awardXpLbl: "付与するXP："
+      toastProposedSent: "送りました！🎉", proposedByKidNote: "🙋 こどもの提案：{xp} XP", awardXpLbl: "付与するXP：",
+      howToBtn: "❓ 使い方", howToModalTitle: "QuestLogの使い方",
+      howToSteps: [{"title": "こどもモードと保護者モードを切り替える", "desc": "上のスイッチをタップします。保護者モードは最初にPINの設定が必要です。"}, {"title": "こどもを追加・名前を変更する", "desc": "保護者モードで「こどもの管理」をタップすると、追加・名前や絵文字の変更・削除ができます。"}, {"title": "クエストを作成する", "desc": "「新しいクエスト」をタップし、担当のこども、タイトル、XPを設定して「クエストを作成」します。"}, {"title": "こどもがクエストを完了報告する", "desc": "こどもモードで「できた！」をタップするか、頼んでいないことをしたときは「✋ やったよ！」で報告できます。"}, {"title": "確認して承認する", "desc": "保護者モードで「確認待ち」を開きます。必要ならXPの数値を変更してから、承認するか、やり直しに戻します。"}, {"title": "バッジを設定する", "desc": "「バッジの管理」で絵文字・名前・必要なXPを設定してバッジを作れます。"}, {"title": "家族チャット", "desc": "誰でもメッセージ・スタンプ・絵文字・ボイスメッセージを送れます。承認ややり直しは自動でチャットに届きます。"}, {"title": "言語を変える", "desc": "上部の言語メニューからいつでも変更でき、全員の画面がすぐに切り替わります。"}]
     }},
     fr: { name: "Français", dir: "ltr", strings: {
       subtitle: "Tableau des tâches familiales", kidMode: "Mode enfant", parentMode: "Mode parent",
@@ -604,7 +619,9 @@
       switchKidBtn: "🔁 Ce n'est pas toi ?",
       proposeTaskBtn: "✋ J'ai fait quelque chose !", proposeModalTitle: "Dis à tes parents ce que tu as fait",
       proposeModalHint: "Envoie-le et tes parents vérifieront.", proposeSubmitBtn: "Envoyer",
-      toastProposedSent: "Envoyé à tes parents ! 🎉", proposedByKidNote: "🙋 L'enfant propose {xp} XP", awardXpLbl: "XP à attribuer :"
+      toastProposedSent: "Envoyé à tes parents ! 🎉", proposedByKidNote: "🙋 L'enfant propose {xp} XP", awardXpLbl: "XP à attribuer :",
+      howToBtn: "❓ Comment utiliser", howToModalTitle: "Comment utiliser QuestLog",
+      howToSteps: [{"title": "Basculer entre mode enfant et mode parent", "desc": "Touche le bouton en haut. Le mode parent demande ton code — crée-en un la première fois."}, {"title": "Ajouter ou renommer un enfant", "desc": "En mode parent, touche « Gérer les enfants » pour ajouter, renommer, changer l'emoji ou supprimer un enfant."}, {"title": "Créer une quête", "desc": "Touche « Nouvelle quête », choisis pour qui, donne un titre et une valeur en XP, puis « Créer la quête »."}, {"title": "Les enfants marquent leurs quêtes comme faites", "desc": "En mode enfant, ils touchent « Terminé » sur une quête, ou « ✋ J'ai fait quelque chose ! » pour signaler autre chose."}, {"title": "Vérifier et approuver", "desc": "En mode parent, ouvre « En attente d'un adulte ». Ajuste les XP si besoin, puis Approuve ou Renvoie."}, {"title": "Configurer les badges", "desc": "Touche « Gérer les badges » pour créer des badges avec un emoji, un nom et les XP nécessaires."}, {"title": "Chat familial", "desc": "Tout le monde peut envoyer messages, stamps, emojis ou messages vocaux. Les quêtes approuvées ou renvoyées s'affichent automatiquement."}, {"title": "Changer de langue", "desc": "Utilise le menu de langue en haut à tout moment — l'affichage change instantanément pour tous."}]
     }},
     es: { name: "Español", dir: "ltr", strings: {
       subtitle: "Tablero de tareas familiares", kidMode: "Modo niño", parentMode: "Modo padres",
@@ -647,7 +664,9 @@
       switchKidBtn: "🔁 ¿No eres tú?",
       proposeTaskBtn: "✋ ¡Hice algo!", proposeModalTitle: "Cuéntale a tu padre o madre qué hiciste",
       proposeModalHint: "Envíalo y lo revisarán.", proposeSubmitBtn: "Enviar",
-      toastProposedSent: "¡Enviado! 🎉", proposedByKidNote: "🙋 El niño sugirió {xp} XP", awardXpLbl: "XP a otorgar:"
+      toastProposedSent: "¡Enviado! 🎉", proposedByKidNote: "🙋 El niño sugirió {xp} XP", awardXpLbl: "XP a otorgar:",
+      howToBtn: "❓ Cómo usarlo", howToModalTitle: "Cómo usar QuestLog",
+      howToSteps: [{"title": "Cambiar entre modo niño y modo padres", "desc": "Toca el interruptor de arriba. El modo padres pide tu PIN — crea uno la primera vez."}, {"title": "Añadir o renombrar niños", "desc": "En modo padres, toca «Gestionar niños» para añadir, renombrar, cambiar el emoji o eliminar a un niño."}, {"title": "Crear una misión", "desc": "Toca «Nueva misión», elige para quién es, ponle un título y un valor en XP, y toca «Crear misión»."}, {"title": "Los niños marcan sus misiones como hechas", "desc": "En modo niño, tocan «Marcar hecho» en una misión, o «✋ ¡Hice algo!» para avisar de algo que no asignaste."}, {"title": "Revisar y aprobar", "desc": "En modo padres, abre «Esperando a un adulto». Ajusta los XP si quieres, y toca Aprobar o Devolver."}, {"title": "Configurar insignias", "desc": "Toca «Gestionar insignias» para crear insignias con un emoji, un nombre y los XP necesarios."}, {"title": "Chat familiar", "desc": "Todos pueden enviar mensajes, stamps, emojis o notas de voz. Las misiones aprobadas o devueltas se publican automáticamente."}, {"title": "Cambiar el idioma", "desc": "Usa el menú de idioma de arriba cuando quieras — la vista de todos se actualiza al instante."}]
     }},
     ko: { name: "한국어", dir: "ltr", strings: {
       subtitle: "가족 할일 보드", kidMode: "어린이 모드", parentMode: "부모 모드",
@@ -690,7 +709,9 @@
       switchKidBtn: "🔁 다른 사람인가요?",
       proposeTaskBtn: "✋ 했어요!", proposeModalTitle: "무엇을 했는지 알려주세요",
       proposeModalHint: "보내면 부모님이 확인할 거예요.", proposeSubmitBtn: "부모님께 보내기",
-      toastProposedSent: "보냈어요! 🎉", proposedByKidNote: "🙋 아이가 제안한 XP: {xp}", awardXpLbl: "부여할 XP:"
+      toastProposedSent: "보냈어요! 🎉", proposedByKidNote: "🙋 아이가 제안한 XP: {xp}", awardXpLbl: "부여할 XP:",
+      howToBtn: "❓ 사용 방법", howToModalTitle: "QuestLog 사용 방법",
+      howToSteps: [{"title": "어린이 모드와 부모 모드 전환하기", "desc": "상단의 스위치를 탭하세요. 부모 모드는 PIN이 필요해요 — 처음엔 새로 설정하세요."}, {"title": "아이 추가 또는 이름 변경하기", "desc": "부모 모드에서 “아이 관리”를 탭해 추가, 이름/이모지 변경, 삭제를 할 수 있어요."}, {"title": "퀘스트 만들기", "desc": "“새 퀘스트”를 탭하고 담당 아이, 제목, XP를 정한 뒤 “퀘스트 만들기”를 누르세요."}, {"title": "아이가 퀘스트 완료를 표시하기", "desc": "어린이 모드에서 “완료로 표시”를 탭하거나, 시키지 않은 일을 했다면 “✋ 했어요!”로 알릴 수 있어요."}, {"title": "확인하고 승인하기", "desc": "부모 모드에서 “확인 대기 중”을 열어보세요. 필요하면 XP 숫자를 바꾸고 승인하거나 다시 하기로 보내세요."}, {"title": "배지 설정하기", "desc": "“배지 관리”에서 이모지, 이름, 필요한 XP를 정해 배지를 만들 수 있어요."}, {"title": "가족 채팅", "desc": "누구나 메시지, 스탬프, 이모지, 음성 메시지를 보낼 수 있어요. 승인/반려는 자동으로 채팅에 올라와요."}, {"title": "언어 바꾸기", "desc": "상단의 언어 메뉴에서 언제든 바꿀 수 있고, 모두의 화면이 즉시 바뀌어요."}]
     }},
     "zh-CN": { name: "中文（简体）", dir: "ltr", strings: {
       subtitle: "家庭任务板", kidMode: "儿童模式", parentMode: "家长模式",
@@ -733,7 +754,9 @@
       switchKidBtn: "🔁 不是你？",
       proposeTaskBtn: "✋ 我做了一件事！", proposeModalTitle: "告诉家长你做了什么",
       proposeModalHint: "发送后家长会审核。", proposeSubmitBtn: "发送给家长",
-      toastProposedSent: "已发送！🎉", proposedByKidNote: "🙋 孩子建议 {xp} XP", awardXpLbl: "授予的XP："
+      toastProposedSent: "已发送！🎉", proposedByKidNote: "🙋 孩子建议 {xp} XP", awardXpLbl: "授予的XP：",
+      howToBtn: "❓ 使用说明", howToModalTitle: "如何使用 QuestLog",
+      howToSteps: [{"title": "切换儿童模式和家长模式", "desc": "点击顶部的切换按钮。家长模式需要输入密码 — 首次使用时请设置一个。"}, {"title": "添加或修改孩子的名字", "desc": "在家长模式下，点击“管理孩子”即可添加、改名、更换表情符号或移除孩子。"}, {"title": "创建任务", "desc": "点击“新任务”，选择分配给谁，填写标题和XP数值，然后点击“创建任务”。"}, {"title": "孩子标记任务完成", "desc": "在儿童模式下，孩子可以点击“标记完成”，或用“✋ 我做了一件事！”提交没有分配过的任务。"}, {"title": "审核并批准", "desc": "在家长模式下打开“等待家长确认”。如需要可调整XP数值，然后点击批准或退回。"}, {"title": "设置徽章", "desc": "点击“管理徽章”，设置表情符号、名称以及解锁所需的XP。"}, {"title": "家庭聊天", "desc": "所有人都可以发送消息、印章、表情符号或语音消息。批准或退回的任务会自动以卡片形式发布。"}, {"title": "更改语言", "desc": "随时使用顶部的语言菜单切换 — 所有人的界面会立即更新。"}]
     }},
     hi: { name: "हिन्दी", dir: "ltr", strings: {
       subtitle: "पारिवारिक कार्य बोर्ड", kidMode: "बच्चों का मोड", parentMode: "अभिभावक मोड",
@@ -776,7 +799,9 @@
       switchKidBtn: "🔁 यह आप नहीं हैं?",
       proposeTaskBtn: "✋ मैंने कुछ किया!", proposeModalTitle: "बताएं आपने क्या किया",
       proposeModalHint: "भेजें और आपके माता-पिता इसे देखेंगे।", proposeSubmitBtn: "भेजें",
-      toastProposedSent: "भेज दिया गया! 🎉", proposedByKidNote: "🙋 बच्चे ने {xp} XP सुझाया", awardXpLbl: "दिया जाने वाला XP:"
+      toastProposedSent: "भेज दिया गया! 🎉", proposedByKidNote: "🙋 बच्चे ने {xp} XP सुझाया", awardXpLbl: "दिया जाने वाला XP:",
+      howToBtn: "❓ कैसे इस्तेमाल करें", howToModalTitle: "QuestLog कैसे इस्तेमाल करें",
+      howToSteps: [{"title": "बच्चों के मोड और अभिभावक मोड के बीच स्विच करें", "desc": "ऊपर दिए स्विच को टैप करें। अभिभावक मोड में PIN चाहिए होता है — पहली बार में एक सेट करें।"}, {"title": "बच्चे जोड़ें या नाम बदलें", "desc": "अभिभावक मोड में “बच्चों को प्रबंधित करें” टैप करके बच्चा जोड़ें, नाम/इमोजी बदलें या हटाएं।"}, {"title": "क्वेस्ट बनाएं", "desc": "“नई क्वेस्ट” टैप करें, किसके लिए है चुनें, नाम और XP डालें, फिर “क्वेस्ट बनाएं” टैप करें।"}, {"title": "बच्चे क्वेस्ट पूरी होने की जानकारी दें", "desc": "बच्चों के मोड में वे “पूरा हुआ बताएं” टैप करते हैं, या बिना बताए किए गए काम के लिए “✋ मैंने कुछ किया!” इस्तेमाल कर सकते हैं।"}, {"title": "समीक्षा करें और स्वीकृत करें", "desc": "अभिभावक मोड में “बड़ों की जांच का इंतज़ार” खोलें। चाहें तो XP बदलें, फिर स्वीकृत करें या वापस भेजें।"}, {"title": "बैज सेट करें", "desc": "“बैज प्रबंधित करें” में इमोजी, नाम और ज़रूरी XP सेट करके बैज बनाएं।"}, {"title": "पारिवारिक चैट", "desc": "कोई भी संदेश, स्टैम्प, इमोजी या वॉइस क्लिप भेज सकता है। स्वीकृत या वापस भेजी गई क्वेस्ट अपने आप चैट में दिखती हैं।"}, {"title": "भाषा बदलें", "desc": "ऊपर दिए भाषा मेनू से कभी भी बदलें — सभी की स्क्रीन तुरंत अपडेट हो जाती है।"}]
     }},
     de: { name: "Deutsch", dir: "ltr", strings: {
       subtitle: "Familien-Aufgabenboard", kidMode: "Kindermodus", parentMode: "Elternmodus",
@@ -819,7 +844,9 @@
       switchKidBtn: "🔁 Nicht du?",
       proposeTaskBtn: "✋ Ich habe was gemacht!", proposeModalTitle: "Erzähl deinen Eltern, was du gemacht hast",
       proposeModalHint: "Schick es ab, deine Eltern prüfen es dann.", proposeSubmitBtn: "Absenden",
-      toastProposedSent: "Gesendet! 🎉", proposedByKidNote: "🙋 Kind schlägt {xp} XP vor", awardXpLbl: "Vergebene XP:"
+      toastProposedSent: "Gesendet! 🎉", proposedByKidNote: "🙋 Kind schlägt {xp} XP vor", awardXpLbl: "Vergebene XP:",
+      howToBtn: "❓ Anleitung", howToModalTitle: "So funktioniert QuestLog",
+      howToSteps: [{"title": "Zwischen Kinder- und Elternmodus wechseln", "desc": "Tippe oben auf den Umschalter. Der Elternmodus fragt nach deiner PIN — leg beim ersten Mal eine fest."}, {"title": "Kinder hinzufügen oder umbenennen", "desc": "Tippe im Elternmodus auf „Kinder verwalten“, um ein Kind hinzuzufügen, umzubenennen, das Emoji zu ändern oder es zu entfernen."}, {"title": "Eine Quest erstellen", "desc": "Tippe auf „Neue Quest“, wähle, für wen sie ist, gib Titel und XP-Wert ein und tippe auf „Quest erstellen“."}, {"title": "Kinder markieren Quests als erledigt", "desc": "Im Kindermodus tippen sie auf „Erledigt“, oder auf „✋ Ich habe was gemacht!“ für nicht zugewiesene Aufgaben."}, {"title": "Prüfen und genehmigen", "desc": "Öffne im Elternmodus „Wartet auf einen Erwachsenen“. Passe bei Bedarf die XP-Zahl an und tippe auf Genehmigen oder Zurückschicken."}, {"title": "Abzeichen einrichten", "desc": "Tippe auf „Abzeichen verwalten“, um Abzeichen mit Emoji, Namen und benötigten XP zu erstellen."}, {"title": "Familienchat", "desc": "Alle können Nachrichten, Stamps, Emojis oder Sprachnachrichten senden. Genehmigte oder zurückgeschickte Quests erscheinen automatisch als Karte."}, {"title": "Sprache ändern", "desc": "Nutze jederzeit das Sprachmenü oben — die Ansicht aller Geräte aktualisiert sich sofort."}]
     }},
     it: { name: "Italiano", dir: "ltr", strings: {
       subtitle: "Bacheca dei compiti di famiglia", kidMode: "Modalità bambino", parentMode: "Modalità genitore",
@@ -862,7 +889,9 @@
       switchKidBtn: "🔁 Non sei tu?",
       proposeTaskBtn: "✋ Ho fatto qualcosa!", proposeModalTitle: "Racconta cosa hai fatto",
       proposeModalHint: "Invialo e sarà controllato da un genitore.", proposeSubmitBtn: "Invia",
-      toastProposedSent: "Inviato! 🎉", proposedByKidNote: "🙋 Il bambino suggerisce {xp} XP", awardXpLbl: "XP da assegnare:"
+      toastProposedSent: "Inviato! 🎉", proposedByKidNote: "🙋 Il bambino suggerisce {xp} XP", awardXpLbl: "XP da assegnare:",
+      howToBtn: "❓ Come si usa", howToModalTitle: "Come usare QuestLog",
+      howToSteps: [{"title": "Passa da modalità bambino a modalità genitore", "desc": "Tocca l'interruttore in alto. La modalità genitore chiede il PIN — impostane uno la prima volta."}, {"title": "Aggiungi o rinomina i bambini", "desc": "In modalità genitore, tocca «Gestisci bambini» per aggiungere, rinominare, cambiare l'emoji o rimuovere un bambino."}, {"title": "Crea una missione", "desc": "Tocca «Nuova missione», scegli per chi è, inserisci titolo e valore XP, poi tocca «Crea missione»."}, {"title": "I bambini segnano le missioni come fatte", "desc": "In modalità bambino toccano «Segna come fatto», oppure «✋ Ho fatto qualcosa!» per qualcosa che non hai assegnato."}, {"title": "Rivedi e approva", "desc": "In modalità genitore apri «In attesa di un adulto». Modifica gli XP se vuoi, poi tocca Approva o Rimanda indietro."}, {"title": "Configura i distintivi", "desc": "Tocca «Gestisci distintivi» per creare distintivi con emoji, nome e XP necessari."}, {"title": "Chat di famiglia", "desc": "Tutti possono inviare messaggi, stamp, emoji o note vocali. Le missioni approvate o rimandate indietro appaiono automaticamente come schede."}, {"title": "Cambia lingua", "desc": "Usa il menu della lingua in alto quando vuoi — la vista di tutti si aggiorna subito."}]
     }},
     pt: { name: "Português", dir: "ltr", strings: {
       subtitle: "Quadro de tarefas da família", kidMode: "Modo criança", parentMode: "Modo responsável",
@@ -905,7 +934,9 @@
       switchKidBtn: "🔁 Não é você?",
       proposeTaskBtn: "✋ Eu fiz uma coisa!", proposeModalTitle: "Conte o que você fez",
       proposeModalHint: "Envie e seus pais vão conferir.", proposeSubmitBtn: "Enviar",
-      toastProposedSent: "Enviado! 🎉", proposedByKidNote: "🙋 A criança sugeriu {xp} XP", awardXpLbl: "XP a conceder:"
+      toastProposedSent: "Enviado! 🎉", proposedByKidNote: "🙋 A criança sugeriu {xp} XP", awardXpLbl: "XP a conceder:",
+      howToBtn: "❓ Como usar", howToModalTitle: "Como usar o QuestLog",
+      howToSteps: [{"title": "Alternar entre modo criança e modo responsável", "desc": "Toque no alternador no topo. O modo responsável pede seu PIN — crie um na primeira vez."}, {"title": "Adicionar ou renomear crianças", "desc": "No modo responsável, toque em “Gerenciar crianças” para adicionar, renomear, trocar o emoji ou remover uma criança."}, {"title": "Criar uma missão", "desc": "Toque em “Nova missão”, escolha para quem é, dê um título e um valor de XP, depois toque em “Criar missão”."}, {"title": "As crianças marcam missões como feitas", "desc": "No modo criança, elas tocam em “Marcar como feito”, ou em “✋ Eu fiz uma coisa!” para algo que você não atribuiu."}, {"title": "Revisar e aprovar", "desc": "No modo responsável, abra “Aguardando um adulto”. Ajuste o XP se quiser, depois toque em Aprovar ou Devolver."}, {"title": "Configurar emblemas", "desc": "Toque em “Gerenciar emblemas” para criar emblemas com emoji, nome e o XP necessário."}, {"title": "Chat da família", "desc": "Todos podem enviar mensagens, stamps, emojis ou notas de voz. Missões aprovadas ou devolvidas aparecem automaticamente como cartões."}, {"title": "Mudar o idioma", "desc": "Use o menu de idioma no topo a qualquer momento — a tela de todos atualiza na hora."}]
     }}
   };
   const LANG_ORDER = ["en", "ja", "fr", "es", "ko", "zh-CN", "hi", "de", "it", "pt"];
@@ -925,6 +956,10 @@
   function tStamps() {
     const dict = (LANGS[lang] && LANGS[lang].strings) || LANGS.en.strings;
     return dict.stamps || LANGS.en.strings.stamps;
+  }
+  function tHowToSteps() {
+    const dict = (LANGS[lang] && LANGS[lang].strings) || LANGS.en.strings;
+    return dict.howToSteps || LANGS.en.strings.howToSteps;
   }
 
   // ================= constants =================
@@ -1043,6 +1078,10 @@
     document.getElementById("newKidNameLbl").textContent = t("newKidNameLbl");
     document.getElementById("addKidBtn").textContent = t("addKidBtn");
     document.getElementById("closeKidsModalBtn").textContent = t("cancel");
+    document.getElementById("howToBtn").textContent = t("howToBtn");
+    document.getElementById("howToModalTitle").textContent = t("howToModalTitle");
+    document.getElementById("closeHowToBtn").textContent = t("cancel");
+    if (document.getElementById("howToModalBg").classList.contains("open")) renderHowToSteps();
     document.getElementById("proposeTaskBtn").textContent = t("proposeTaskBtn");
     document.getElementById("proposeModalTitle").textContent = t("proposeModalTitle");
     document.getElementById("proposeModalHint").textContent = t("proposeModalHint");
@@ -1090,6 +1129,7 @@
     document.getElementById("manageBadgesBtn").style.display = r === "parent" ? "inline-block" : "none";
     document.getElementById("proposeTaskBtn").style.display = r === "child" ? "inline-block" : "none";
     document.getElementById("lockBtn").style.display = r === "parent" ? "flex" : "none";
+    document.getElementById("howToBtn").style.display = r === "parent" ? "inline-block" : "none";
     document.getElementById("switchKidBtn").style.display = (r === "child" && kidsList().length > 1) ? "inline-flex" : "none";
     if (r === "child") { parentUnlocked = false; }
     renderKidPicker();
@@ -1577,6 +1617,24 @@
     } catch (e) { console.error(e); toast(t("toastConflict")); }
   }
 
+  // ================= how-to guide (parent mode only) =================
+  function openHowToModal() {
+    renderHowToSteps();
+    document.getElementById("howToModalBg").classList.add("open");
+  }
+  function closeHowToModal() { document.getElementById("howToModalBg").classList.remove("open"); }
+
+  function renderHowToSteps() {
+    const wrap = document.getElementById("howToStepsList");
+    wrap.innerHTML = "";
+    tHowToSteps().forEach(step => {
+      const li = document.createElement("li");
+      li.style.cssText = "font-size:14px; line-height:1.4;";
+      li.innerHTML = `<strong>${escapeHtml(step.title)}</strong><br><span style="color:#6c6488; font-size:13px;">${escapeHtml(step.desc)}</span>`;
+      wrap.appendChild(li);
+    });
+  }
+
   // ================= propose a task (kid-initiated) =================
   function openProposeModal() {
     document.getElementById("proposeTaskTitle").value = "";
@@ -1897,6 +1955,9 @@
     openPinModal(parentPin ? "enter" : "set");
   });
   document.getElementById("lockBtn").addEventListener("click", lockParentMode);
+  document.getElementById("howToBtn").addEventListener("click", openHowToModal);
+  document.getElementById("closeHowToBtn").addEventListener("click", closeHowToModal);
+  document.getElementById("howToModalBg").addEventListener("click", (e) => { if (e.target.id === "howToModalBg") closeHowToModal(); });
   document.getElementById("switchKidBtn").addEventListener("click", switchKid);
   document.getElementById("proposeTaskBtn").addEventListener("click", openProposeModal);
   document.getElementById("proposeCancelBtn").addEventListener("click", closeProposeModal);
