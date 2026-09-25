@@ -233,6 +233,7 @@
         <button class="add-btn manage-btn" id="manageBadgesBtn" style="display:none; background:rgba(255,255,255,0.12); color:#e6e0ff;"></button>
         <button class="add-btn manage-btn" id="manageKidsBtn" style="display:none; background:rgba(255,255,255,0.12); color:#e6e0ff;"></button>
         <button class="add-btn" id="addTaskBtn"></button>
+        <button class="add-btn" id="proposeTaskBtn" style="display:none; background:var(--coral); color:#3a0d0d;"></button>
       </div>
     </div>
     <div class="columns">
@@ -347,6 +348,29 @@
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="closeKidsModalBtn"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="proposeModalBg">
+  <div class="modal">
+    <h3 id="proposeModalTitle"></h3>
+    <p class="hint" id="proposeModalHint"></p>
+    <div class="field">
+      <label id="proposeFieldTitleLbl"></label>
+      <input type="text" id="proposeTaskTitle" maxlength="60">
+    </div>
+    <div class="field">
+      <label id="proposeFieldXpLbl"></label>
+      <select id="proposeTaskXp">
+        <option value="10" id="proposeXpQuickOpt"></option>
+        <option value="20" selected id="proposeXpNormalOpt"></option>
+        <option value="35" id="proposeXpBigOpt"></option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="proposeCancelBtn"></button>
+      <button class="btn btn-approve" id="proposeSubmitBtn"></button>
     </div>
   </div>
 </div>
@@ -491,7 +515,10 @@
       toastBadgeAdded: "Badge added!", toastBadgeSaved: "Saved.", toastBadgeUnlocked: "New badge: {name}!",
       badgeUnlockedNote: "New badge: {name}!",
       whoAreYouTitle: "Who's doing chores today?", whoAreYouHint: "Tap your name to see your own quests.",
-      switchKidBtn: "🔁 Not you?"
+      switchKidBtn: "🔁 Not you?",
+      proposeTaskBtn: "✋ I did something!", proposeModalTitle: "Tell your parent what you did",
+      proposeModalHint: "Send it in and your parent will review it.", proposeSubmitBtn: "Send to parent",
+      toastProposedSent: "Sent to your parent! 🎉", proposedByKidNote: "🙋 Proposed by kid"
     }},
     ja: { name: "日本語", dir: "ltr", strings: {
       subtitle: "家族のタスクボード", kidMode: "こどもモード", parentMode: "保護者モード",
@@ -531,7 +558,10 @@
       toastBadgeAdded: "バッジを追加しました！", toastBadgeSaved: "保存しました。", toastBadgeUnlocked: "新しいバッジ：{name}！",
       badgeUnlockedNote: "新しいバッジ：{name}！",
       whoAreYouTitle: "今日は誰がクエストする？", whoAreYouHint: "自分の名前をタップしてね。",
-      switchKidBtn: "🔁 ちがう人？"
+      switchKidBtn: "🔁 ちがう人？",
+      proposeTaskBtn: "✋ やったよ！", proposeModalTitle: "やったことを伝えよう",
+      proposeModalHint: "送ると保護者が確認します。", proposeSubmitBtn: "保護者に送る",
+      toastProposedSent: "送りました！🎉", proposedByKidNote: "🙋 こどもからの報告"
     }},
     fr: { name: "Français", dir: "ltr", strings: {
       subtitle: "Tableau des tâches familiales", kidMode: "Mode enfant", parentMode: "Mode parent",
@@ -571,7 +601,10 @@
       toastBadgeAdded: "Badge ajouté !", toastBadgeSaved: "Enregistré.", toastBadgeUnlocked: "Nouveau badge : {name} !",
       badgeUnlockedNote: "Nouveau badge : {name} !",
       whoAreYouTitle: "Qui fait ses quêtes aujourd'hui ?", whoAreYouHint: "Touche ton prénom pour voir tes propres quêtes.",
-      switchKidBtn: "🔁 Ce n'est pas toi ?"
+      switchKidBtn: "🔁 Ce n'est pas toi ?",
+      proposeTaskBtn: "✋ J'ai fait quelque chose !", proposeModalTitle: "Dis à tes parents ce que tu as fait",
+      proposeModalHint: "Envoie-le et tes parents vérifieront.", proposeSubmitBtn: "Envoyer",
+      toastProposedSent: "Envoyé à tes parents ! 🎉", proposedByKidNote: "🙋 Proposé par l'enfant"
     }},
     es: { name: "Español", dir: "ltr", strings: {
       subtitle: "Tablero de tareas familiares", kidMode: "Modo niño", parentMode: "Modo padres",
@@ -611,7 +644,10 @@
       toastBadgeAdded: "¡Insignia añadida!", toastBadgeSaved: "Guardado.", toastBadgeUnlocked: "¡Nueva insignia: {name}!",
       badgeUnlockedNote: "¡Nueva insignia: {name}!",
       whoAreYouTitle: "¿Quién hace misiones hoy?", whoAreYouHint: "Toca tu nombre para ver tus propias misiones.",
-      switchKidBtn: "🔁 ¿No eres tú?"
+      switchKidBtn: "🔁 ¿No eres tú?",
+      proposeTaskBtn: "✋ ¡Hice algo!", proposeModalTitle: "Cuéntale a tu padre o madre qué hiciste",
+      proposeModalHint: "Envíalo y lo revisarán.", proposeSubmitBtn: "Enviar",
+      toastProposedSent: "¡Enviado! 🎉", proposedByKidNote: "🙋 Propuesto por el niño"
     }},
     ko: { name: "한국어", dir: "ltr", strings: {
       subtitle: "가족 할일 보드", kidMode: "어린이 모드", parentMode: "부모 모드",
@@ -651,7 +687,10 @@
       toastBadgeAdded: "배지가 추가되었어요!", toastBadgeSaved: "저장되었어요.", toastBadgeUnlocked: "새 배지: {name}!",
       badgeUnlockedNote: "새 배지: {name}!",
       whoAreYouTitle: "오늘은 누가 할 일을 하나요?", whoAreYouHint: "내 이름을 탭해서 내 퀘스트를 확인하세요.",
-      switchKidBtn: "🔁 다른 사람인가요?"
+      switchKidBtn: "🔁 다른 사람인가요?",
+      proposeTaskBtn: "✋ 했어요!", proposeModalTitle: "무엇을 했는지 알려주세요",
+      proposeModalHint: "보내면 부모님이 확인할 거예요.", proposeSubmitBtn: "부모님께 보내기",
+      toastProposedSent: "보냈어요! 🎉", proposedByKidNote: "🙋 아이가 제안함"
     }},
     "zh-CN": { name: "中文（简体）", dir: "ltr", strings: {
       subtitle: "家庭任务板", kidMode: "儿童模式", parentMode: "家长模式",
@@ -691,7 +730,10 @@
       toastBadgeAdded: "徽章已添加！", toastBadgeSaved: "已保存。", toastBadgeUnlocked: "新徽章：{name}！",
       badgeUnlockedNote: "新徽章：{name}！",
       whoAreYouTitle: "今天是谁来做任务？", whoAreYouHint: "点击你的名字查看你自己的任务。",
-      switchKidBtn: "🔁 不是你？"
+      switchKidBtn: "🔁 不是你？",
+      proposeTaskBtn: "✋ 我做了一件事！", proposeModalTitle: "告诉家长你做了什么",
+      proposeModalHint: "发送后家长会审核。", proposeSubmitBtn: "发送给家长",
+      toastProposedSent: "已发送！🎉", proposedByKidNote: "🙋 孩子主动提交"
     }},
     hi: { name: "हिन्दी", dir: "ltr", strings: {
       subtitle: "पारिवारिक कार्य बोर्ड", kidMode: "बच्चों का मोड", parentMode: "अभिभावक मोड",
@@ -731,7 +773,10 @@
       toastBadgeAdded: "बैज जोड़ा गया!", toastBadgeSaved: "सेव हो गया।", toastBadgeUnlocked: "नया बैज: {name}!",
       badgeUnlockedNote: "नया बैज: {name}!",
       whoAreYouTitle: "आज काम कौन करेगा?", whoAreYouHint: "अपनी क्वेस्ट देखने के लिए अपना नाम टैप करें।",
-      switchKidBtn: "🔁 यह आप नहीं हैं?"
+      switchKidBtn: "🔁 यह आप नहीं हैं?",
+      proposeTaskBtn: "✋ मैंने कुछ किया!", proposeModalTitle: "बताएं आपने क्या किया",
+      proposeModalHint: "भेजें और आपके माता-पिता इसे देखेंगे।", proposeSubmitBtn: "भेजें",
+      toastProposedSent: "भेज दिया गया! 🎉", proposedByKidNote: "🙋 बच्चे ने बताया"
     }},
     de: { name: "Deutsch", dir: "ltr", strings: {
       subtitle: "Familien-Aufgabenboard", kidMode: "Kindermodus", parentMode: "Elternmodus",
@@ -771,7 +816,10 @@
       toastBadgeAdded: "Abzeichen hinzugefügt!", toastBadgeSaved: "Gespeichert.", toastBadgeUnlocked: "Neues Abzeichen: {name}!",
       badgeUnlockedNote: "Neues Abzeichen: {name}!",
       whoAreYouTitle: "Wer erledigt heute Aufgaben?", whoAreYouHint: "Tippe auf deinen Namen, um deine eigenen Quests zu sehen.",
-      switchKidBtn: "🔁 Nicht du?"
+      switchKidBtn: "🔁 Nicht du?",
+      proposeTaskBtn: "✋ Ich habe was gemacht!", proposeModalTitle: "Erzähl deinen Eltern, was du gemacht hast",
+      proposeModalHint: "Schick es ab, deine Eltern prüfen es dann.", proposeSubmitBtn: "Absenden",
+      toastProposedSent: "Gesendet! 🎉", proposedByKidNote: "🙋 Vom Kind vorgeschlagen"
     }},
     it: { name: "Italiano", dir: "ltr", strings: {
       subtitle: "Bacheca dei compiti di famiglia", kidMode: "Modalità bambino", parentMode: "Modalità genitore",
@@ -811,7 +859,10 @@
       toastBadgeAdded: "Distintivo aggiunto!", toastBadgeSaved: "Salvato.", toastBadgeUnlocked: "Nuovo distintivo: {name}!",
       badgeUnlockedNote: "Nuovo distintivo: {name}!",
       whoAreYouTitle: "Chi fa le faccende oggi?", whoAreYouHint: "Tocca il tuo nome per vedere le tue missioni.",
-      switchKidBtn: "🔁 Non sei tu?"
+      switchKidBtn: "🔁 Non sei tu?",
+      proposeTaskBtn: "✋ Ho fatto qualcosa!", proposeModalTitle: "Racconta cosa hai fatto",
+      proposeModalHint: "Invialo e sarà controllato da un genitore.", proposeSubmitBtn: "Invia",
+      toastProposedSent: "Inviato! 🎉", proposedByKidNote: "🙋 Proposto dal bambino"
     }},
     pt: { name: "Português", dir: "ltr", strings: {
       subtitle: "Quadro de tarefas da família", kidMode: "Modo criança", parentMode: "Modo responsável",
@@ -851,7 +902,10 @@
       toastBadgeAdded: "Emblema adicionado!", toastBadgeSaved: "Salvo.", toastBadgeUnlocked: "Novo emblema: {name}!",
       badgeUnlockedNote: "Novo emblema: {name}!",
       whoAreYouTitle: "Quem vai fazer as tarefas hoje?", whoAreYouHint: "Toque no seu nome para ver suas próprias missões.",
-      switchKidBtn: "🔁 Não é você?"
+      switchKidBtn: "🔁 Não é você?",
+      proposeTaskBtn: "✋ Eu fiz uma coisa!", proposeModalTitle: "Conte o que você fez",
+      proposeModalHint: "Envie e seus pais vão conferir.", proposeSubmitBtn: "Enviar",
+      toastProposedSent: "Enviado! 🎉", proposedByKidNote: "🙋 Sugerido pela criança"
     }}
   };
   const LANG_ORDER = ["en", "ja", "fr", "es", "ko", "zh-CN", "hi", "de", "it", "pt"];
@@ -989,6 +1043,17 @@
     document.getElementById("newKidNameLbl").textContent = t("newKidNameLbl");
     document.getElementById("addKidBtn").textContent = t("addKidBtn");
     document.getElementById("closeKidsModalBtn").textContent = t("cancel");
+    document.getElementById("proposeTaskBtn").textContent = t("proposeTaskBtn");
+    document.getElementById("proposeModalTitle").textContent = t("proposeModalTitle");
+    document.getElementById("proposeModalHint").textContent = t("proposeModalHint");
+    document.getElementById("proposeFieldTitleLbl").textContent = t("fieldTitle");
+    document.getElementById("proposeTaskTitle").placeholder = t("fieldTitlePh");
+    document.getElementById("proposeFieldXpLbl").textContent = t("fieldXp");
+    document.getElementById("proposeXpQuickOpt").textContent = t("xpQuick");
+    document.getElementById("proposeXpNormalOpt").textContent = t("xpNormal");
+    document.getElementById("proposeXpBigOpt").textContent = t("xpBig");
+    document.getElementById("proposeCancelBtn").textContent = t("cancel");
+    document.getElementById("proposeSubmitBtn").textContent = t("proposeSubmitBtn");
     document.getElementById("whoAreYouTitle").textContent = t("whoAreYouTitle");
     document.getElementById("whoAreYouHint").textContent = t("whoAreYouHint");
     document.getElementById("switchKidBtn").textContent = t("switchKidBtn");
@@ -1023,6 +1088,7 @@
     document.getElementById("addTaskBtn").style.display = r === "parent" ? "inline-block" : "none";
     document.getElementById("manageKidsBtn").style.display = r === "parent" ? "inline-block" : "none";
     document.getElementById("manageBadgesBtn").style.display = r === "parent" ? "inline-block" : "none";
+    document.getElementById("proposeTaskBtn").style.display = r === "child" ? "inline-block" : "none";
     document.getElementById("lockBtn").style.display = r === "parent" ? "flex" : "none";
     document.getElementById("switchKidBtn").style.display = (r === "child" && kidsList().length > 1) ? "inline-flex" : "none";
     if (r === "child") { parentUnlocked = false; }
@@ -1204,6 +1270,7 @@
     } else if (tk.status === "assigned" && role === "parent") {
       noteHtml = `<div class="status-note">${escapeHtml(t("waitingFor", { name: kid.name }))}</div>`;
     } else if (tk.status === "pending" && role === "parent") {
+      if (tk.proposedByKid) noteHtml = `<div class="status-note" style="color:#8b3fd4;">${escapeHtml(t("proposedByKidNote"))}</div>`;
       actionsHtml = `<div class="task-actions">
           <button class="btn btn-approve" data-act="approve" data-id="${tk.id}">${escapeHtml(t("approveBtn"))}</button>
           <button class="btn btn-reject" data-act="reject" data-id="${tk.id}">${escapeHtml(t("sendBackBtn"))}</button>
@@ -1493,6 +1560,36 @@
     } catch (e) { console.error(e); toast(t("toastConflict")); }
   }
 
+  // ================= propose a task (kid-initiated) =================
+  function openProposeModal() {
+    document.getElementById("proposeTaskTitle").value = "";
+    document.getElementById("proposeTaskXp").value = "20";
+    document.getElementById("proposeModalBg").classList.add("open");
+  }
+  function closeProposeModal() { document.getElementById("proposeModalBg").classList.remove("open"); }
+
+  async function submitProposedTask() {
+    const title = document.getElementById("proposeTaskTitle").value.trim();
+    const xp = parseInt(document.getElementById("proposeTaskXp").value, 10);
+    if (!title) { toast(t("toastGiveTitle")); return; }
+    if (!db || !activeKid) { toast(t("toastNotConnected")); return; }
+    try {
+      await db.collection("tasks").add({
+        title, assignedTo: activeKid, xp, status: "pending",
+        createdAt: Date.now(), submittedAt: Date.now(), proposedByKid: true
+      });
+      await db.collection("messages").add({
+        type: "task_card", taskTitle: title, status: "pending", proposedByKid: true,
+        sender: kidById(activeKid).name, senderRole: "child", ts: Date.now()
+      });
+      closeProposeModal();
+      toast(t("toastProposedSent"));
+    } catch (e) {
+      console.error(e);
+      toast(t("toastCouldntAdd"));
+    }
+  }
+
   // ================= PIN gate =================
   function openPinModal(mode) {
     pinMode = mode; // "enter" or "set"
@@ -1578,7 +1675,7 @@
       wrap.innerHTML = `
         <div class="msg-sender">${escapeHtml(m.sender)} · ${timeStr(m.ts)}</div>
         <div class="msg-card">
-          <div class="mc-title">🗒️ ${escapeHtml(m.taskTitle)}</div>
+          <div class="mc-title">${m.proposedByKid ? "🙋" : "🗒️"} ${escapeHtml(m.taskTitle)}</div>
           <div class="mc-status ${m.status}">${escapeHtml(statusLabel)}</div>
         </div>`;
     } else if (m.type === "voice") {
@@ -1784,6 +1881,10 @@
   });
   document.getElementById("lockBtn").addEventListener("click", lockParentMode);
   document.getElementById("switchKidBtn").addEventListener("click", switchKid);
+  document.getElementById("proposeTaskBtn").addEventListener("click", openProposeModal);
+  document.getElementById("proposeCancelBtn").addEventListener("click", closeProposeModal);
+  document.getElementById("proposeModalBg").addEventListener("click", (e) => { if (e.target.id === "proposeModalBg") closeProposeModal(); });
+  document.getElementById("proposeSubmitBtn").addEventListener("click", submitProposedTask);
   document.getElementById("statBadgesCard").addEventListener("click", openBadgesViewModal);
   document.getElementById("statBadgesCard").addEventListener("keydown", (e) => { if (e.key === "Enter") openBadgesViewModal(); });
   document.getElementById("closeBadgesViewBtn").addEventListener("click", closeBadgesViewModal);
