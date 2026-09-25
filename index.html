@@ -374,6 +374,9 @@
   import {
     getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot
   } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+  import {
+    getAuth, signInAnonymously, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB7Wl9rmyf_sHjfm78-NMH9v_3jdiLEWLY",
@@ -388,6 +391,18 @@
     try {
       const app = initializeApp(firebaseConfig);
       const firestore = getFirestore(app);
+      const auth = getAuth(app);
+
+      // Firestore rules require request.auth != null, so sign in anonymously
+      // before anything else. This doesn't identify who's using the app —
+      // it just gives Firestore something to check, to keep out drive-by
+      // bots and scripts that scan for open databases.
+      await new Promise((resolve, reject) => {
+        const unsub = onAuthStateChanged(auth, (user) => {
+          if (user) { unsub(); resolve(user); }
+        }, reject);
+        signInAnonymously(auth).catch(reject);
+      });
 
       // Wraps the Firestore modular SDK behind the same tiny interface the app
       // already speaks to Claude's artifact "db" capability, so the rest of
