@@ -211,6 +211,10 @@
       <button data-role="parent" id="roleParentBtn"></button>
     </div>
     <button id="howToBtn" style="display:none; background: rgba(255,255,255,0.08); color: #e6e0ff; border: 1px solid var(--line-soft); border-radius: 999px; font-family: inherit; font-weight: 700; font-size: 12.5px; padding: 8px 13px; cursor: pointer;"></button>
+    <button id="parentInboxBtn" style="display:none; position:relative; background: rgba(255,255,255,0.08); color: #e6e0ff; border: 1px solid var(--line-soft); border-radius: 999px; font-family: inherit; font-weight: 700; font-size: 12.5px; padding: 8px 13px; cursor: pointer;">
+      <span id="parentInboxLabel"></span>
+      <span id="parentInboxBadge" style="display:none; position:absolute; top:-6px; right:-6px; background:var(--coral); color:#3a0d0d; border-radius:999px; font-size:10px; font-weight:800; min-width:17px; height:17px; line-height:17px; text-align:center; padding:0 3px;"></span>
+    </button>
     <button class="lock-btn" id="lockBtn" title="Lock parent mode" style="display:none;">🔒</button>
   </div>
 </div>
@@ -236,6 +240,7 @@
         <button class="add-btn" id="addTaskBtn"></button>
         <button class="add-btn" id="proposeTaskBtn" style="display:none; background:var(--coral); color:#3a0d0d;"></button>
         <button id="kidHowToBtn" style="display:none; background: rgba(255,255,255,0.08); color: #e6e0ff; border: 1px solid var(--line-soft); border-radius: 999px; font-family: inherit; font-weight: 700; font-size: 12.5px; padding: 8px 13px; cursor: pointer;"></button>
+        <button class="add-btn" id="privateMsgBtn" style="display:none; background: var(--sky); color: #052033;"></button>
       </div>
     </div>
     <div class="columns">
@@ -350,6 +355,32 @@
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="closeKidsModalBtn"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="privateMsgModalBg">
+  <div class="modal">
+    <h3 id="privateMsgModalTitle"></h3>
+    <p class="hint" id="privateMsgModalHint"></p>
+    <div class="field">
+      <textarea id="privateMsgText" maxlength="500" rows="4"
+        style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--line); font-size:14px; font-family:inherit; resize:vertical;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="privateMsgCancelBtn"></button>
+      <button class="btn btn-approve" id="privateMsgSendBtn" style="background:var(--sky);"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="parentInboxModalBg">
+  <div class="modal" style="max-width:440px;">
+    <h3 id="parentInboxModalTitle"></h3>
+    <p class="hint" id="parentInboxModalHint"></p>
+    <div id="parentInboxList" style="display:flex; flex-direction:column; gap:8px; max-height:380px; overflow-y:auto;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="closeParentInboxBtn"></button>
     </div>
   </div>
 </div>
@@ -544,7 +575,10 @@
       howToBtn: "❓ How to use", howToModalTitle: "How to use QuestLog",
       howToSteps: [{"title": "Switch between Kid mode and Parent mode", "desc": "Tap the toggle at the top. Parent mode asks for your PIN — set one the first time you use it."}, {"title": "Add or rename kids", "desc": "In Parent mode, tap “Manage kids” to add a child, change their name or emoji, or remove one."}, {"title": "Create a quest", "desc": "Tap “New quest,” pick who it's for, give it a title and XP value, then tap “Create quest.”"}, {"title": "Kids mark quests done", "desc": "In Kid mode, they tap “Mark done” on an assigned quest, or “✋ I did something!” to report something you didn't assign."}, {"title": "Review and approve", "desc": "In Parent mode, open “Waiting on a grown-up.” Adjust the Award XP number if you like, then tap Approve or Send back."}, {"title": "Set up badges", "desc": "Tap “Manage badges” to create badges with an emoji, name, and the XP needed to unlock them."}, {"title": "Family chat", "desc": "Everyone can send messages, quick stamps, emoji, or a voice clip. Approved and sent-back quests post automatically as cards."}, {"title": "Change the language", "desc": "Use the language dropdown at the top any time — everyone's view updates instantly."}],
       kidHowToBtn: "❓ Help", kidHowToModalTitle: "How QuestLog works",
-      kidHowToSteps: [{"title": "Pick your name", "desc": "Tap your name and emoji so the app knows it's you."}, {"title": "Do your quests", "desc": "Tap “Mark done” when you finish something on your list."}, {"title": "Did something extra?", "desc": "Tap “✋ I did something!” to tell your parent about it."}, {"title": "Earn XP and badges", "desc": "When your parent says yes, you get XP! Collect enough XP to unlock badges."}, {"title": "Chat with your family", "desc": "Send messages, stamps, emoji, or a voice message."}, {"title": "Not you?", "desc": "Tap “🔁 Not you?” if it's someone else's turn."}]
+      kidHowToSteps: [{"title": "Pick your name", "desc": "Tap your name and emoji so the app knows it's you."}, {"title": "Do your quests", "desc": "Tap “Mark done” when you finish something on your list."}, {"title": "Did something extra?", "desc": "Tap “✋ I did something!” to tell your parent about it."}, {"title": "Earn XP and badges", "desc": "When your parent says yes, you get XP! Collect enough XP to unlock badges."}, {"title": "Chat with your family", "desc": "Send messages, stamps, emoji, or a voice message."}, {"title": "Not you?", "desc": "Tap “🔁 Not you?” if it's someone else's turn."}],
+      privateMsgBtn: "💌 Message your parent", privateMsgModalTitle: "Send a private message", privateMsgModalHint: "Only your parent will see this — not your brothers or sisters.",
+      privateMsgSendBtn: "Send privately", toastPrivateMsgSent: "Sent privately! 💌", parentInboxBtn: "💌 Private messages",
+      parentInboxModalHint: "Private notes from your kids — only you can see these.", parentInboxEmpty: "No private messages.", parentInboxDismissBtn: "Got it"
     }},
     ja: { name: "日本語", dir: "ltr", strings: {
       subtitle: "家族のタスクボード", kidMode: "こどもモード", parentMode: "保護者モード",
@@ -591,7 +625,10 @@
       howToBtn: "❓ 使い方", howToModalTitle: "QuestLogの使い方",
       howToSteps: [{"title": "こどもモードと保護者モードを切り替える", "desc": "上のスイッチをタップします。保護者モードは最初にPINの設定が必要です。"}, {"title": "こどもを追加・名前を変更する", "desc": "保護者モードで「こどもの管理」をタップすると、追加・名前や絵文字の変更・削除ができます。"}, {"title": "クエストを作成する", "desc": "「新しいクエスト」をタップし、担当のこども、タイトル、XPを設定して「クエストを作成」します。"}, {"title": "こどもがクエストを完了報告する", "desc": "こどもモードで「できた！」をタップするか、頼んでいないことをしたときは「✋ やったよ！」で報告できます。"}, {"title": "確認して承認する", "desc": "保護者モードで「確認待ち」を開きます。必要ならXPの数値を変更してから、承認するか、やり直しに戻します。"}, {"title": "バッジを設定する", "desc": "「バッジの管理」で絵文字・名前・必要なXPを設定してバッジを作れます。"}, {"title": "家族チャット", "desc": "誰でもメッセージ・スタンプ・絵文字・ボイスメッセージを送れます。承認ややり直しは自動でチャットに届きます。"}, {"title": "言語を変える", "desc": "上部の言語メニューからいつでも変更でき、全員の画面がすぐに切り替わります。"}],
       kidHowToBtn: "❓ つかいかた", kidHowToModalTitle: "QuestLogのつかいかた",
-      kidHowToSteps: [{"title": "自分の名前をえらぶ", "desc": "自分の名前と絵文字をタップしてね。"}, {"title": "クエストをやる", "desc": "やることが終わったら「できた！」をタップしよう。"}, {"title": "べつのことをしたときは？", "desc": "頼まれていないことをしたら「✋ やったよ！」でおしえよう。"}, {"title": "XPとバッジをもらう", "desc": "保護者がOKしたらXPがもらえるよ！たまるとバッジがもらえるよ。"}, {"title": "家族とチャット", "desc": "メッセージやスタンプ、絵文字、ボイスメッセージを送れるよ。"}, {"title": "自分じゃないときは？", "desc": "ほかの人の番なら「🔁 ちがう人？」をタップしてね。"}]
+      kidHowToSteps: [{"title": "自分の名前をえらぶ", "desc": "自分の名前と絵文字をタップしてね。"}, {"title": "クエストをやる", "desc": "やることが終わったら「できた！」をタップしよう。"}, {"title": "べつのことをしたときは？", "desc": "頼まれていないことをしたら「✋ やったよ！」でおしえよう。"}, {"title": "XPとバッジをもらう", "desc": "保護者がOKしたらXPがもらえるよ！たまるとバッジがもらえるよ。"}, {"title": "家族とチャット", "desc": "メッセージやスタンプ、絵文字、ボイスメッセージを送れるよ。"}, {"title": "自分じゃないときは？", "desc": "ほかの人の番なら「🔁 ちがう人？」をタップしてね。"}],
+      privateMsgBtn: "💌 保護者にメッセージ", privateMsgModalTitle: "ひみつのメッセージを送る", privateMsgModalHint: "これは保護者だけが見られます。きょうだいには見えません。",
+      privateMsgSendBtn: "こっそり送る", toastPrivateMsgSent: "送りました！💌", parentInboxBtn: "💌 ひみつメッセージ",
+      parentInboxModalHint: "こどもからのひみつメッセージです。あなただけが見られます。", parentInboxEmpty: "ひみつメッセージはありません。", parentInboxDismissBtn: "確認しました"
     }},
     fr: { name: "Français", dir: "ltr", strings: {
       subtitle: "Tableau des tâches familiales", kidMode: "Mode enfant", parentMode: "Mode parent",
@@ -638,7 +675,10 @@
       howToBtn: "❓ Comment utiliser", howToModalTitle: "Comment utiliser QuestLog",
       howToSteps: [{"title": "Basculer entre mode enfant et mode parent", "desc": "Touche le bouton en haut. Le mode parent demande ton code — crée-en un la première fois."}, {"title": "Ajouter ou renommer un enfant", "desc": "En mode parent, touche « Gérer les enfants » pour ajouter, renommer, changer l'emoji ou supprimer un enfant."}, {"title": "Créer une quête", "desc": "Touche « Nouvelle quête », choisis pour qui, donne un titre et une valeur en XP, puis « Créer la quête »."}, {"title": "Les enfants marquent leurs quêtes comme faites", "desc": "En mode enfant, ils touchent « Terminé » sur une quête, ou « ✋ J'ai fait quelque chose ! » pour signaler autre chose."}, {"title": "Vérifier et approuver", "desc": "En mode parent, ouvre « En attente d'un adulte ». Ajuste les XP si besoin, puis Approuve ou Renvoie."}, {"title": "Configurer les badges", "desc": "Touche « Gérer les badges » pour créer des badges avec un emoji, un nom et les XP nécessaires."}, {"title": "Chat familial", "desc": "Tout le monde peut envoyer messages, stamps, emojis ou messages vocaux. Les quêtes approuvées ou renvoyées s'affichent automatiquement."}, {"title": "Changer de langue", "desc": "Utilise le menu de langue en haut à tout moment — l'affichage change instantanément pour tous."}],
       kidHowToBtn: "❓ Aide", kidHowToModalTitle: "Comment marche QuestLog",
-      kidHowToSteps: [{"title": "Choisis ton prénom", "desc": "Touche ton prénom et ton emoji pour que l'appli sache que c'est toi."}, {"title": "Fais tes quêtes", "desc": "Touche « Terminé » quand tu as fini quelque chose sur ta liste."}, {"title": "Tu as fait autre chose ?", "desc": "Touche « ✋ J'ai fait quelque chose ! » pour le dire à tes parents."}, {"title": "Gagne des XP et des badges", "desc": "Quand tes parents disent oui, tu gagnes des XP ! Rassembles-en assez pour débloquer des badges."}, {"title": "Discute avec ta famille", "desc": "Envoie des messages, des stamps, des emojis ou un message vocal."}, {"title": "Ce n'est pas toi ?", "desc": "Touche « 🔁 Ce n'est pas toi ? » si c'est le tour de quelqu'un d'autre."}]
+      kidHowToSteps: [{"title": "Choisis ton prénom", "desc": "Touche ton prénom et ton emoji pour que l'appli sache que c'est toi."}, {"title": "Fais tes quêtes", "desc": "Touche « Terminé » quand tu as fini quelque chose sur ta liste."}, {"title": "Tu as fait autre chose ?", "desc": "Touche « ✋ J'ai fait quelque chose ! » pour le dire à tes parents."}, {"title": "Gagne des XP et des badges", "desc": "Quand tes parents disent oui, tu gagnes des XP ! Rassembles-en assez pour débloquer des badges."}, {"title": "Discute avec ta famille", "desc": "Envoie des messages, des stamps, des emojis ou un message vocal."}, {"title": "Ce n'est pas toi ?", "desc": "Touche « 🔁 Ce n'est pas toi ? » si c'est le tour de quelqu'un d'autre."}],
+      privateMsgBtn: "💌 Message à tes parents", privateMsgModalTitle: "Envoyer un message privé", privateMsgModalHint: "Seuls tes parents verront ceci — pas tes frères et sœurs.",
+      privateMsgSendBtn: "Envoyer en privé", toastPrivateMsgSent: "Envoyé en privé ! 💌", parentInboxBtn: "💌 Messages privés",
+      parentInboxModalHint: "Messages privés de tes enfants — toi seul(e) peux les voir.", parentInboxEmpty: "Aucun message privé.", parentInboxDismissBtn: "Compris"
     }},
     es: { name: "Español", dir: "ltr", strings: {
       subtitle: "Tablero de tareas familiares", kidMode: "Modo niño", parentMode: "Modo padres",
@@ -685,7 +725,10 @@
       howToBtn: "❓ Cómo usarlo", howToModalTitle: "Cómo usar QuestLog",
       howToSteps: [{"title": "Cambiar entre modo niño y modo padres", "desc": "Toca el interruptor de arriba. El modo padres pide tu PIN — crea uno la primera vez."}, {"title": "Añadir o renombrar niños", "desc": "En modo padres, toca «Gestionar niños» para añadir, renombrar, cambiar el emoji o eliminar a un niño."}, {"title": "Crear una misión", "desc": "Toca «Nueva misión», elige para quién es, ponle un título y un valor en XP, y toca «Crear misión»."}, {"title": "Los niños marcan sus misiones como hechas", "desc": "En modo niño, tocan «Marcar hecho» en una misión, o «✋ ¡Hice algo!» para avisar de algo que no asignaste."}, {"title": "Revisar y aprobar", "desc": "En modo padres, abre «Esperando a un adulto». Ajusta los XP si quieres, y toca Aprobar o Devolver."}, {"title": "Configurar insignias", "desc": "Toca «Gestionar insignias» para crear insignias con un emoji, un nombre y los XP necesarios."}, {"title": "Chat familiar", "desc": "Todos pueden enviar mensajes, stamps, emojis o notas de voz. Las misiones aprobadas o devueltas se publican automáticamente."}, {"title": "Cambiar el idioma", "desc": "Usa el menú de idioma de arriba cuando quieras — la vista de todos se actualiza al instante."}],
       kidHowToBtn: "❓ Ayuda", kidHowToModalTitle: "Cómo funciona QuestLog",
-      kidHowToSteps: [{"title": "Elige tu nombre", "desc": "Toca tu nombre y tu emoji para que la app sepa que eres tú."}, {"title": "Haz tus misiones", "desc": "Toca «Marcar hecho» cuando termines algo de tu lista."}, {"title": "¿Hiciste algo extra?", "desc": "Toca «✋ ¡Hice algo!» para contárselo a tus padres."}, {"title": "Gana XP e insignias", "desc": "¡Cuando tus padres digan que sí, ganas XP! Junta suficiente para desbloquear insignias."}, {"title": "Chatea con tu familia", "desc": "Envía mensajes, stamps, emojis o una nota de voz."}, {"title": "¿No eres tú?", "desc": "Toca «🔁 ¿No eres tú?» si le toca a otra persona."}]
+      kidHowToSteps: [{"title": "Elige tu nombre", "desc": "Toca tu nombre y tu emoji para que la app sepa que eres tú."}, {"title": "Haz tus misiones", "desc": "Toca «Marcar hecho» cuando termines algo de tu lista."}, {"title": "¿Hiciste algo extra?", "desc": "Toca «✋ ¡Hice algo!» para contárselo a tus padres."}, {"title": "Gana XP e insignias", "desc": "¡Cuando tus padres digan que sí, ganas XP! Junta suficiente para desbloquear insignias."}, {"title": "Chatea con tu familia", "desc": "Envía mensajes, stamps, emojis o una nota de voz."}, {"title": "¿No eres tú?", "desc": "Toca «🔁 ¿No eres tú?» si le toca a otra persona."}],
+      privateMsgBtn: "💌 Mensaje a tus padres", privateMsgModalTitle: "Enviar un mensaje privado", privateMsgModalHint: "Solo tus padres verán esto — no tus hermanos.",
+      privateMsgSendBtn: "Enviar en privado", toastPrivateMsgSent: "¡Enviado en privado! 💌", parentInboxBtn: "💌 Mensajes privados",
+      parentInboxModalHint: "Notas privadas de tus hijos — solo tú puedes verlas.", parentInboxEmpty: "No hay mensajes privados.", parentInboxDismissBtn: "Entendido"
     }},
     ko: { name: "한국어", dir: "ltr", strings: {
       subtitle: "가족 할일 보드", kidMode: "어린이 모드", parentMode: "부모 모드",
@@ -732,7 +775,10 @@
       howToBtn: "❓ 사용 방법", howToModalTitle: "QuestLog 사용 방법",
       howToSteps: [{"title": "어린이 모드와 부모 모드 전환하기", "desc": "상단의 스위치를 탭하세요. 부모 모드는 PIN이 필요해요 — 처음엔 새로 설정하세요."}, {"title": "아이 추가 또는 이름 변경하기", "desc": "부모 모드에서 “아이 관리”를 탭해 추가, 이름/이모지 변경, 삭제를 할 수 있어요."}, {"title": "퀘스트 만들기", "desc": "“새 퀘스트”를 탭하고 담당 아이, 제목, XP를 정한 뒤 “퀘스트 만들기”를 누르세요."}, {"title": "아이가 퀘스트 완료를 표시하기", "desc": "어린이 모드에서 “완료로 표시”를 탭하거나, 시키지 않은 일을 했다면 “✋ 했어요!”로 알릴 수 있어요."}, {"title": "확인하고 승인하기", "desc": "부모 모드에서 “확인 대기 중”을 열어보세요. 필요하면 XP 숫자를 바꾸고 승인하거나 다시 하기로 보내세요."}, {"title": "배지 설정하기", "desc": "“배지 관리”에서 이모지, 이름, 필요한 XP를 정해 배지를 만들 수 있어요."}, {"title": "가족 채팅", "desc": "누구나 메시지, 스탬프, 이모지, 음성 메시지를 보낼 수 있어요. 승인/반려는 자동으로 채팅에 올라와요."}, {"title": "언어 바꾸기", "desc": "상단의 언어 메뉴에서 언제든 바꿀 수 있고, 모두의 화면이 즉시 바뀌어요."}],
       kidHowToBtn: "❓ 도움말", kidHowToModalTitle: "QuestLog 사용법",
-      kidHowToSteps: [{"title": "내 이름 고르기", "desc": "내 이름과 이모지를 탭하면 앱이 나를 알아봐요."}, {"title": "퀘스트 하기", "desc": "할 일을 끝내면 “완료로 표시”를 탭하세요."}, {"title": "다른 걸 했다면?", "desc": "부탁받지 않은 일을 했다면 “✋ 했어요!”를 탭해서 알려주세요."}, {"title": "XP와 배지 모으기", "desc": "부모님이 좋다고 하면 XP를 받아요! XP를 모으면 배지를 얻을 수 있어요."}, {"title": "가족과 채팅하기", "desc": "메시지, 스탬프, 이모지, 음성 메시지를 보낼 수 있어요."}, {"title": "내 차례가 아니라면?", "desc": "다른 사람 차례라면 “🔁 다른 사람인가요?”를 탭하세요."}]
+      kidHowToSteps: [{"title": "내 이름 고르기", "desc": "내 이름과 이모지를 탭하면 앱이 나를 알아봐요."}, {"title": "퀘스트 하기", "desc": "할 일을 끝내면 “완료로 표시”를 탭하세요."}, {"title": "다른 걸 했다면?", "desc": "부탁받지 않은 일을 했다면 “✋ 했어요!”를 탭해서 알려주세요."}, {"title": "XP와 배지 모으기", "desc": "부모님이 좋다고 하면 XP를 받아요! XP를 모으면 배지를 얻을 수 있어요."}, {"title": "가족과 채팅하기", "desc": "메시지, 스탬프, 이모지, 음성 메시지를 보낼 수 있어요."}, {"title": "내 차례가 아니라면?", "desc": "다른 사람 차례라면 “🔁 다른 사람인가요?”를 탭하세요."}],
+      privateMsgBtn: "💌 부모님께 메시지", privateMsgModalTitle: "비밀 메시지 보내기", privateMsgModalHint: "이건 부모님만 볼 수 있어요 — 형제자매는 볼 수 없어요.",
+      privateMsgSendBtn: "비밀로 보내기", toastPrivateMsgSent: "비밀로 보냈어요! 💌", parentInboxBtn: "💌 비밀 메시지",
+      parentInboxModalHint: "아이들이 보낸 비밀 메시지예요 — 당신만 볼 수 있어요.", parentInboxEmpty: "비밀 메시지가 없어요.", parentInboxDismissBtn: "확인했어요"
     }},
     "zh-CN": { name: "中文（简体）", dir: "ltr", strings: {
       subtitle: "家庭任务板", kidMode: "儿童模式", parentMode: "家长模式",
@@ -779,7 +825,10 @@
       howToBtn: "❓ 使用说明", howToModalTitle: "如何使用 QuestLog",
       howToSteps: [{"title": "切换儿童模式和家长模式", "desc": "点击顶部的切换按钮。家长模式需要输入密码 — 首次使用时请设置一个。"}, {"title": "添加或修改孩子的名字", "desc": "在家长模式下，点击“管理孩子”即可添加、改名、更换表情符号或移除孩子。"}, {"title": "创建任务", "desc": "点击“新任务”，选择分配给谁，填写标题和XP数值，然后点击“创建任务”。"}, {"title": "孩子标记任务完成", "desc": "在儿童模式下，孩子可以点击“标记完成”，或用“✋ 我做了一件事！”提交没有分配过的任务。"}, {"title": "审核并批准", "desc": "在家长模式下打开“等待家长确认”。如需要可调整XP数值，然后点击批准或退回。"}, {"title": "设置徽章", "desc": "点击“管理徽章”，设置表情符号、名称以及解锁所需的XP。"}, {"title": "家庭聊天", "desc": "所有人都可以发送消息、印章、表情符号或语音消息。批准或退回的任务会自动以卡片形式发布。"}, {"title": "更改语言", "desc": "随时使用顶部的语言菜单切换 — 所有人的界面会立即更新。"}],
       kidHowToBtn: "❓ 帮助", kidHowToModalTitle: "QuestLog 怎么玩",
-      kidHowToSteps: [{"title": "选择你的名字", "desc": "点击你的名字和表情符号，这样应用就知道是你啦。"}, {"title": "完成任务", "desc": "做完清单上的事情后，点击“标记完成”。"}, {"title": "做了别的事情？", "desc": "如果做了没被安排的事，点击“✋ 我做了一件事！”告诉家长。"}, {"title": "获得XP和徽章", "desc": "家长同意后你会获得XP！集齐XP就能解锁徽章。"}, {"title": "和家人聊天", "desc": "可以发消息、印章、表情符号或语音消息。"}, {"title": "不是你的时候", "desc": "如果轮到别人，点击“🔁 不是你？”。"}]
+      kidHowToSteps: [{"title": "选择你的名字", "desc": "点击你的名字和表情符号，这样应用就知道是你啦。"}, {"title": "完成任务", "desc": "做完清单上的事情后，点击“标记完成”。"}, {"title": "做了别的事情？", "desc": "如果做了没被安排的事，点击“✋ 我做了一件事！”告诉家长。"}, {"title": "获得XP和徽章", "desc": "家长同意后你会获得XP！集齐XP就能解锁徽章。"}, {"title": "和家人聊天", "desc": "可以发消息、印章、表情符号或语音消息。"}, {"title": "不是你的时候", "desc": "如果轮到别人，点击“🔁 不是你？”。"}],
+      privateMsgBtn: "💌 给家长发消息", privateMsgModalTitle: "发送私密消息", privateMsgModalHint: "只有家长能看到 — 兄弟姐妹看不到。",
+      privateMsgSendBtn: "私密发送", toastPrivateMsgSent: "已私密发送！💌", parentInboxBtn: "💌 私密消息",
+      parentInboxModalHint: "来自孩子的私密留言 — 只有你能看到。", parentInboxEmpty: "没有私密消息。", parentInboxDismissBtn: "知道了"
     }},
     hi: { name: "हिन्दी", dir: "ltr", strings: {
       subtitle: "पारिवारिक कार्य बोर्ड", kidMode: "बच्चों का मोड", parentMode: "अभिभावक मोड",
@@ -826,7 +875,10 @@
       howToBtn: "❓ कैसे इस्तेमाल करें", howToModalTitle: "QuestLog कैसे इस्तेमाल करें",
       howToSteps: [{"title": "बच्चों के मोड और अभिभावक मोड के बीच स्विच करें", "desc": "ऊपर दिए स्विच को टैप करें। अभिभावक मोड में PIN चाहिए होता है — पहली बार में एक सेट करें।"}, {"title": "बच्चे जोड़ें या नाम बदलें", "desc": "अभिभावक मोड में “बच्चों को प्रबंधित करें” टैप करके बच्चा जोड़ें, नाम/इमोजी बदलें या हटाएं।"}, {"title": "क्वेस्ट बनाएं", "desc": "“नई क्वेस्ट” टैप करें, किसके लिए है चुनें, नाम और XP डालें, फिर “क्वेस्ट बनाएं” टैप करें।"}, {"title": "बच्चे क्वेस्ट पूरी होने की जानकारी दें", "desc": "बच्चों के मोड में वे “पूरा हुआ बताएं” टैप करते हैं, या बिना बताए किए गए काम के लिए “✋ मैंने कुछ किया!” इस्तेमाल कर सकते हैं।"}, {"title": "समीक्षा करें और स्वीकृत करें", "desc": "अभिभावक मोड में “बड़ों की जांच का इंतज़ार” खोलें। चाहें तो XP बदलें, फिर स्वीकृत करें या वापस भेजें।"}, {"title": "बैज सेट करें", "desc": "“बैज प्रबंधित करें” में इमोजी, नाम और ज़रूरी XP सेट करके बैज बनाएं।"}, {"title": "पारिवारिक चैट", "desc": "कोई भी संदेश, स्टैम्प, इमोजी या वॉइस क्लिप भेज सकता है। स्वीकृत या वापस भेजी गई क्वेस्ट अपने आप चैट में दिखती हैं।"}, {"title": "भाषा बदलें", "desc": "ऊपर दिए भाषा मेनू से कभी भी बदलें — सभी की स्क्रीन तुरंत अपडेट हो जाती है।"}],
       kidHowToBtn: "❓ मदद", kidHowToModalTitle: "QuestLog कैसे काम करता है",
-      kidHowToSteps: [{"title": "अपना नाम चुनें", "desc": "अपने नाम और इमोजी पर टैप करें ताकि ऐप को पता चले कि यह आप हैं।"}, {"title": "अपनी क्वेस्ट करें", "desc": "जब आप लिस्ट में कोई काम पूरा कर लें, तो “पूरा हुआ बताएं” टैप करें।"}, {"title": "कुछ और किया?", "desc": "अगर आपने कुछ ऐसा किया जो पूछा नहीं गया था, तो “✋ मैंने कुछ किया!” टैप करें।"}, {"title": "XP और बैज पाएं", "desc": "जब आपके माता-पिता हां कहेंगे, आपको XP मिलेगा! काफी XP जमा करके बैज पाएं।"}, {"title": "परिवार से चैट करें", "desc": "संदेश, स्टैम्प, इमोजी या वॉइस मैसेज भेजें।"}, {"title": "आपकी बारी नहीं है?", "desc": "अगर किसी और की बारी है, तो “🔁 यह आप नहीं हैं?” टैप करें।"}]
+      kidHowToSteps: [{"title": "अपना नाम चुनें", "desc": "अपने नाम और इमोजी पर टैप करें ताकि ऐप को पता चले कि यह आप हैं।"}, {"title": "अपनी क्वेस्ट करें", "desc": "जब आप लिस्ट में कोई काम पूरा कर लें, तो “पूरा हुआ बताएं” टैप करें।"}, {"title": "कुछ और किया?", "desc": "अगर आपने कुछ ऐसा किया जो पूछा नहीं गया था, तो “✋ मैंने कुछ किया!” टैप करें।"}, {"title": "XP और बैज पाएं", "desc": "जब आपके माता-पिता हां कहेंगे, आपको XP मिलेगा! काफी XP जमा करके बैज पाएं।"}, {"title": "परिवार से चैट करें", "desc": "संदेश, स्टैम्प, इमोजी या वॉइस मैसेज भेजें।"}, {"title": "आपकी बारी नहीं है?", "desc": "अगर किसी और की बारी है, तो “🔁 यह आप नहीं हैं?” टैप करें।"}],
+      privateMsgBtn: "💌 माता-पिता को संदेश", privateMsgModalTitle: "निजी संदेश भेजें", privateMsgModalHint: "यह सिर्फ आपके माता-पिता देखेंगे — आपके भाई-बहन नहीं।",
+      privateMsgSendBtn: "निजी तौर पर भेजें", toastPrivateMsgSent: "निजी तौर पर भेज दिया! 💌", parentInboxBtn: "💌 निजी संदेश",
+      parentInboxModalHint: "आपके बच्चों के निजी संदेश — सिर्फ आप देख सकते हैं।", parentInboxEmpty: "कोई निजी संदेश नहीं है।", parentInboxDismissBtn: "समझ गया"
     }},
     de: { name: "Deutsch", dir: "ltr", strings: {
       subtitle: "Familien-Aufgabenboard", kidMode: "Kindermodus", parentMode: "Elternmodus",
@@ -873,7 +925,10 @@
       howToBtn: "❓ Anleitung", howToModalTitle: "So funktioniert QuestLog",
       howToSteps: [{"title": "Zwischen Kinder- und Elternmodus wechseln", "desc": "Tippe oben auf den Umschalter. Der Elternmodus fragt nach deiner PIN — leg beim ersten Mal eine fest."}, {"title": "Kinder hinzufügen oder umbenennen", "desc": "Tippe im Elternmodus auf „Kinder verwalten“, um ein Kind hinzuzufügen, umzubenennen, das Emoji zu ändern oder es zu entfernen."}, {"title": "Eine Quest erstellen", "desc": "Tippe auf „Neue Quest“, wähle, für wen sie ist, gib Titel und XP-Wert ein und tippe auf „Quest erstellen“."}, {"title": "Kinder markieren Quests als erledigt", "desc": "Im Kindermodus tippen sie auf „Erledigt“, oder auf „✋ Ich habe was gemacht!“ für nicht zugewiesene Aufgaben."}, {"title": "Prüfen und genehmigen", "desc": "Öffne im Elternmodus „Wartet auf einen Erwachsenen“. Passe bei Bedarf die XP-Zahl an und tippe auf Genehmigen oder Zurückschicken."}, {"title": "Abzeichen einrichten", "desc": "Tippe auf „Abzeichen verwalten“, um Abzeichen mit Emoji, Namen und benötigten XP zu erstellen."}, {"title": "Familienchat", "desc": "Alle können Nachrichten, Stamps, Emojis oder Sprachnachrichten senden. Genehmigte oder zurückgeschickte Quests erscheinen automatisch als Karte."}, {"title": "Sprache ändern", "desc": "Nutze jederzeit das Sprachmenü oben — die Ansicht aller Geräte aktualisiert sich sofort."}],
       kidHowToBtn: "❓ Hilfe", kidHowToModalTitle: "So funktioniert QuestLog",
-      kidHowToSteps: [{"title": "Wähle deinen Namen", "desc": "Tippe auf deinen Namen und dein Emoji, damit die App weiß, dass du es bist."}, {"title": "Erledige deine Quests", "desc": "Tippe auf „Erledigt“, wenn du etwas von deiner Liste geschafft hast."}, {"title": "Etwas anderes gemacht?", "desc": "Tippe auf „✋ Ich habe was gemacht!“, um es deinen Eltern zu erzählen."}, {"title": "XP und Abzeichen sammeln", "desc": "Wenn deine Eltern Ja sagen, bekommst du XP! Sammle genug XP, um Abzeichen freizuschalten."}, {"title": "Chatte mit deiner Familie", "desc": "Schick Nachrichten, Stamps, Emojis oder eine Sprachnachricht."}, {"title": "Nicht du?", "desc": "Tippe auf „🔁 Nicht du?“, wenn jemand anderes dran ist."}]
+      kidHowToSteps: [{"title": "Wähle deinen Namen", "desc": "Tippe auf deinen Namen und dein Emoji, damit die App weiß, dass du es bist."}, {"title": "Erledige deine Quests", "desc": "Tippe auf „Erledigt“, wenn du etwas von deiner Liste geschafft hast."}, {"title": "Etwas anderes gemacht?", "desc": "Tippe auf „✋ Ich habe was gemacht!“, um es deinen Eltern zu erzählen."}, {"title": "XP und Abzeichen sammeln", "desc": "Wenn deine Eltern Ja sagen, bekommst du XP! Sammle genug XP, um Abzeichen freizuschalten."}, {"title": "Chatte mit deiner Familie", "desc": "Schick Nachrichten, Stamps, Emojis oder eine Sprachnachricht."}, {"title": "Nicht du?", "desc": "Tippe auf „🔁 Nicht du?“, wenn jemand anderes dran ist."}],
+      privateMsgBtn: "💌 Nachricht an deine Eltern", privateMsgModalTitle: "Private Nachricht senden", privateMsgModalHint: "Nur deine Eltern sehen das — nicht deine Geschwister.",
+      privateMsgSendBtn: "Privat senden", toastPrivateMsgSent: "Privat gesendet! 💌", parentInboxBtn: "💌 Private Nachrichten",
+      parentInboxModalHint: "Private Nachrichten deiner Kinder — nur du siehst sie.", parentInboxEmpty: "Keine privaten Nachrichten.", parentInboxDismissBtn: "Verstanden"
     }},
     it: { name: "Italiano", dir: "ltr", strings: {
       subtitle: "Bacheca dei compiti di famiglia", kidMode: "Modalità bambino", parentMode: "Modalità genitore",
@@ -920,7 +975,10 @@
       howToBtn: "❓ Come si usa", howToModalTitle: "Come usare QuestLog",
       howToSteps: [{"title": "Passa da modalità bambino a modalità genitore", "desc": "Tocca l'interruttore in alto. La modalità genitore chiede il PIN — impostane uno la prima volta."}, {"title": "Aggiungi o rinomina i bambini", "desc": "In modalità genitore, tocca «Gestisci bambini» per aggiungere, rinominare, cambiare l'emoji o rimuovere un bambino."}, {"title": "Crea una missione", "desc": "Tocca «Nuova missione», scegli per chi è, inserisci titolo e valore XP, poi tocca «Crea missione»."}, {"title": "I bambini segnano le missioni come fatte", "desc": "In modalità bambino toccano «Segna come fatto», oppure «✋ Ho fatto qualcosa!» per qualcosa che non hai assegnato."}, {"title": "Rivedi e approva", "desc": "In modalità genitore apri «In attesa di un adulto». Modifica gli XP se vuoi, poi tocca Approva o Rimanda indietro."}, {"title": "Configura i distintivi", "desc": "Tocca «Gestisci distintivi» per creare distintivi con emoji, nome e XP necessari."}, {"title": "Chat di famiglia", "desc": "Tutti possono inviare messaggi, stamp, emoji o note vocali. Le missioni approvate o rimandate indietro appaiono automaticamente come schede."}, {"title": "Cambia lingua", "desc": "Usa il menu della lingua in alto quando vuoi — la vista di tutti si aggiorna subito."}],
       kidHowToBtn: "❓ Aiuto", kidHowToModalTitle: "Come funziona QuestLog",
-      kidHowToSteps: [{"title": "Scegli il tuo nome", "desc": "Tocca il tuo nome e la tua emoji così l'app sa che sei tu."}, {"title": "Fai le tue missioni", "desc": "Tocca «Segna come fatto» quando finisci qualcosa della tua lista."}, {"title": "Hai fatto qualcos'altro?", "desc": "Tocca «✋ Ho fatto qualcosa!» per dirlo ai tuoi genitori."}, {"title": "Guadagna XP e distintivi", "desc": "Quando i tuoi genitori dicono sì, guadagni XP! Raccoglili per sbloccare i distintivi."}, {"title": "Chatta con la tua famiglia", "desc": "Invia messaggi, stamp, emoji o un messaggio vocale."}, {"title": "Non sei tu?", "desc": "Tocca «🔁 Non sei tu?» se è il turno di qualcun altro."}]
+      kidHowToSteps: [{"title": "Scegli il tuo nome", "desc": "Tocca il tuo nome e la tua emoji così l'app sa che sei tu."}, {"title": "Fai le tue missioni", "desc": "Tocca «Segna come fatto» quando finisci qualcosa della tua lista."}, {"title": "Hai fatto qualcos'altro?", "desc": "Tocca «✋ Ho fatto qualcosa!» per dirlo ai tuoi genitori."}, {"title": "Guadagna XP e distintivi", "desc": "Quando i tuoi genitori dicono sì, guadagni XP! Raccoglili per sbloccare i distintivi."}, {"title": "Chatta con la tua famiglia", "desc": "Invia messaggi, stamp, emoji o un messaggio vocale."}, {"title": "Non sei tu?", "desc": "Tocca «🔁 Non sei tu?» se è il turno di qualcun altro."}],
+      privateMsgBtn: "💌 Messaggio ai tuoi genitori", privateMsgModalTitle: "Invia un messaggio privato", privateMsgModalHint: "Solo i tuoi genitori lo vedranno — non i tuoi fratelli o sorelle.",
+      privateMsgSendBtn: "Invia in privato", toastPrivateMsgSent: "Inviato in privato! 💌", parentInboxBtn: "💌 Messaggi privati",
+      parentInboxModalHint: "Messaggi privati dai tuoi figli — solo tu puoi vederli.", parentInboxEmpty: "Nessun messaggio privato.", parentInboxDismissBtn: "Capito"
     }},
     pt: { name: "Português", dir: "ltr", strings: {
       subtitle: "Quadro de tarefas da família", kidMode: "Modo criança", parentMode: "Modo responsável",
@@ -967,7 +1025,10 @@
       howToBtn: "❓ Como usar", howToModalTitle: "Como usar o QuestLog",
       howToSteps: [{"title": "Alternar entre modo criança e modo responsável", "desc": "Toque no alternador no topo. O modo responsável pede seu PIN — crie um na primeira vez."}, {"title": "Adicionar ou renomear crianças", "desc": "No modo responsável, toque em “Gerenciar crianças” para adicionar, renomear, trocar o emoji ou remover uma criança."}, {"title": "Criar uma missão", "desc": "Toque em “Nova missão”, escolha para quem é, dê um título e um valor de XP, depois toque em “Criar missão”."}, {"title": "As crianças marcam missões como feitas", "desc": "No modo criança, elas tocam em “Marcar como feito”, ou em “✋ Eu fiz uma coisa!” para algo que você não atribuiu."}, {"title": "Revisar e aprovar", "desc": "No modo responsável, abra “Aguardando um adulto”. Ajuste o XP se quiser, depois toque em Aprovar ou Devolver."}, {"title": "Configurar emblemas", "desc": "Toque em “Gerenciar emblemas” para criar emblemas com emoji, nome e o XP necessário."}, {"title": "Chat da família", "desc": "Todos podem enviar mensagens, stamps, emojis ou notas de voz. Missões aprovadas ou devolvidas aparecem automaticamente como cartões."}, {"title": "Mudar o idioma", "desc": "Use o menu de idioma no topo a qualquer momento — a tela de todos atualiza na hora."}],
       kidHowToBtn: "❓ Ajuda", kidHowToModalTitle: "Como funciona o QuestLog",
-      kidHowToSteps: [{"title": "Escolha seu nome", "desc": "Toque no seu nome e emoji para o app saber que é você."}, {"title": "Faça suas missões", "desc": "Toque em “Marcar como feito” quando terminar algo da sua lista."}, {"title": "Fez outra coisa?", "desc": "Toque em “✋ Eu fiz uma coisa!” para contar aos seus pais."}, {"title": "Ganhe XP e emblemas", "desc": "Quando seus pais disserem sim, você ganha XP! Junte XP para desbloquear emblemas."}, {"title": "Converse com sua família", "desc": "Envie mensagens, stamps, emojis ou uma nota de voz."}, {"title": "Não é você?", "desc": "Toque em “🔁 Não é você?” se for a vez de outra pessoa."}]
+      kidHowToSteps: [{"title": "Escolha seu nome", "desc": "Toque no seu nome e emoji para o app saber que é você."}, {"title": "Faça suas missões", "desc": "Toque em “Marcar como feito” quando terminar algo da sua lista."}, {"title": "Fez outra coisa?", "desc": "Toque em “✋ Eu fiz uma coisa!” para contar aos seus pais."}, {"title": "Ganhe XP e emblemas", "desc": "Quando seus pais disserem sim, você ganha XP! Junte XP para desbloquear emblemas."}, {"title": "Converse com sua família", "desc": "Envie mensagens, stamps, emojis ou uma nota de voz."}, {"title": "Não é você?", "desc": "Toque em “🔁 Não é você?” se for a vez de outra pessoa."}],
+      privateMsgBtn: "💌 Mensagem para seus pais", privateMsgModalTitle: "Enviar uma mensagem privada", privateMsgModalHint: "Só seus pais vão ver isso — não seus irmãos.",
+      privateMsgSendBtn: "Enviar em particular", toastPrivateMsgSent: "Enviado em particular! 💌", parentInboxBtn: "💌 Mensagens privadas",
+      parentInboxModalHint: "Notas privadas dos seus filhos — só você pode ver.", parentInboxEmpty: "Nenhuma mensagem privada.", parentInboxDismissBtn: "Entendi"
     }}
   };
   const LANG_ORDER = ["en", "ja", "fr", "es", "ko", "zh-CN", "hi", "de", "it", "pt"];
@@ -1020,6 +1081,8 @@
   let badgesCache = {};       // live from db.collection("badges")
   let removePendingId = null; // two-tap confirm state for removing a kid
   let removePendingBadgeId = null;
+  let privateMessagesCache = {}; // only ever populated while parent mode is unlocked
+  let privateMsgUnsub = null;
   let parentPin = null;       // stored PIN from settings doc (null = not set yet)
   let settingsDoc = {};       // full settings/main doc (parentPin + one-time seed flags)
   let settingsLoaded = false; // true once the first settings snapshot has arrived
@@ -1113,6 +1176,16 @@
     document.getElementById("newKidNameLbl").textContent = t("newKidNameLbl");
     document.getElementById("addKidBtn").textContent = t("addKidBtn");
     document.getElementById("closeKidsModalBtn").textContent = t("cancel");
+    document.getElementById("privateMsgBtn").textContent = t("privateMsgBtn");
+    document.getElementById("privateMsgModalTitle").textContent = t("privateMsgModalTitle");
+    document.getElementById("privateMsgModalHint").textContent = t("privateMsgModalHint");
+    document.getElementById("privateMsgCancelBtn").textContent = t("cancel");
+    document.getElementById("privateMsgSendBtn").textContent = t("privateMsgSendBtn");
+    document.getElementById("parentInboxLabel").textContent = t("parentInboxBtn");
+    document.getElementById("parentInboxModalTitle").textContent = t("parentInboxBtn");
+    document.getElementById("parentInboxModalHint").textContent = t("parentInboxModalHint");
+    document.getElementById("closeParentInboxBtn").textContent = t("cancel");
+    if (document.getElementById("parentInboxModalBg").classList.contains("open")) renderParentInbox();
     document.getElementById("kidHowToBtn").textContent = t("kidHowToBtn");
     document.getElementById("kidHowToModalTitle").textContent = t("kidHowToModalTitle");
     document.getElementById("closeKidHowToBtn").textContent = t("cancel");
@@ -1170,8 +1243,11 @@
     document.getElementById("kidHowToBtn").style.display = r === "child" ? "inline-block" : "none";
     document.getElementById("lockBtn").style.display = r === "parent" ? "flex" : "none";
     document.getElementById("howToBtn").style.display = r === "parent" ? "inline-block" : "none";
+    document.getElementById("parentInboxBtn").style.display = r === "parent" ? "inline-block" : "none";
+    document.getElementById("privateMsgBtn").style.display = r === "child" ? "inline-block" : "none";
     document.getElementById("switchKidBtn").style.display = (r === "child" && kidsList().length > 1) ? "inline-flex" : "none";
-    if (r === "child") { parentUnlocked = false; }
+    if (r === "child") { parentUnlocked = false; unsubscribePrivateMessages(); }
+    else { subscribePrivateMessages(); }
     renderKidPicker();
     renderTasks();
     renderStats();
@@ -1657,6 +1733,95 @@
     } catch (e) { console.error(e); toast(t("toastConflict")); }
   }
 
+  // ================= private messages: kid → parent, one-way =================
+  // Only subscribed to while parent mode is unlocked (see setRole), so this
+  // data never loads into a kid's browser at all unless the PIN has been entered.
+  function subscribePrivateMessages() {
+    if (!db || privateMsgUnsub) return;
+    try {
+      privateMsgUnsub = db.collection("privateMessages").onSnapshot((snap) => {
+        privateMessagesCache = {};
+        (snap.docs || snap || []).forEach(d => { privateMessagesCache[d.id] = d.data ? d.data() : d; });
+        updateInboxBadge();
+        if (document.getElementById("parentInboxModalBg").classList.contains("open")) renderParentInbox();
+      });
+    } catch (e) { console.error("private messages subscription failed", e); }
+  }
+  function unsubscribePrivateMessages() {
+    if (typeof privateMsgUnsub === "function") { try { privateMsgUnsub(); } catch (e) { /* ignore */ } }
+    privateMsgUnsub = null;
+    privateMessagesCache = {};
+    updateInboxBadge();
+  }
+  function updateInboxBadge() {
+    const badge = document.getElementById("parentInboxBadge");
+    const count = Object.keys(privateMessagesCache).length;
+    badge.textContent = count > 9 ? "9+" : String(count);
+    badge.style.display = count > 0 ? "block" : "none";
+  }
+
+  function openPrivateMsgModal() {
+    document.getElementById("privateMsgText").value = "";
+    document.getElementById("privateMsgModalBg").classList.add("open");
+  }
+  function closePrivateMsgModal() { document.getElementById("privateMsgModalBg").classList.remove("open"); }
+
+  async function sendPrivateMsg() {
+    const text = document.getElementById("privateMsgText").value.trim();
+    if (!text) { toast(t("toastGiveTitle")); return; }
+    if (!db || !activeKid) { toast(t("toastNotConnected")); return; }
+    try {
+      await db.collection("privateMessages").add({
+        kidId: activeKid, kidName: kidById(activeKid).name, text, ts: Date.now()
+      });
+      closePrivateMsgModal();
+      toast(t("toastPrivateMsgSent"));
+    } catch (e) {
+      console.error(e);
+      toast(t("toastCouldntAdd"));
+    }
+  }
+
+  function openParentInboxModal() {
+    renderParentInbox();
+    document.getElementById("parentInboxModalBg").classList.add("open");
+  }
+  function closeParentInboxModal() { document.getElementById("parentInboxModalBg").classList.remove("open"); }
+
+  function renderParentInbox() {
+    const wrap = document.getElementById("parentInboxList");
+    const items = Object.entries(privateMessagesCache)
+      .map(([id, m]) => ({ id, ...m }))
+      .sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    wrap.innerHTML = "";
+    if (!items.length) {
+      wrap.innerHTML = `<div class="empty-col" style="color:#6c6488;">${escapeHtml(t("parentInboxEmpty"))}</div>`;
+      return;
+    }
+    items.forEach(m => {
+      const row = document.createElement("div");
+      row.className = "history-item";
+      row.style.alignItems = "flex-start";
+      row.innerHTML = `
+        <div class="hi-left" style="min-width:0;">
+          <div class="hi-title">${escapeHtml(m.kidName || "")}</div>
+          <div class="hi-date">${timeStr(m.ts)}</div>
+          <div style="margin-top:6px; font-size:13.5px; color:var(--ink); white-space:pre-wrap; word-break:break-word;">${escapeHtml(m.text || "")}</div>
+        </div>
+        <button class="btn btn-ghost" data-dismiss="${m.id}" style="flex-shrink:0; font-size:11.5px;">${escapeHtml(t("parentInboxDismissBtn"))}</button>`;
+      wrap.appendChild(row);
+    });
+    wrap.querySelectorAll("[data-dismiss]").forEach(btn => {
+      btn.addEventListener("click", () => dismissPrivateMsg(btn.dataset.dismiss));
+    });
+  }
+
+  async function dismissPrivateMsg(id) {
+    if (!db) return;
+    try { await db.doc("privateMessages/" + id).delete(); }
+    catch (e) { console.error(e); toast(t("toastConflict")); }
+  }
+
   // ================= how-to guide (parent mode only) =================
   function openHowToModal() {
     renderHowToSteps();
@@ -2015,6 +2180,13 @@
   document.getElementById("lockBtn").addEventListener("click", lockParentMode);
   document.getElementById("howToBtn").addEventListener("click", openHowToModal);
   document.getElementById("kidHowToBtn").addEventListener("click", openKidHowToModal);
+  document.getElementById("privateMsgBtn").addEventListener("click", openPrivateMsgModal);
+  document.getElementById("privateMsgCancelBtn").addEventListener("click", closePrivateMsgModal);
+  document.getElementById("privateMsgModalBg").addEventListener("click", (e) => { if (e.target.id === "privateMsgModalBg") closePrivateMsgModal(); });
+  document.getElementById("privateMsgSendBtn").addEventListener("click", sendPrivateMsg);
+  document.getElementById("parentInboxBtn").addEventListener("click", openParentInboxModal);
+  document.getElementById("closeParentInboxBtn").addEventListener("click", closeParentInboxModal);
+  document.getElementById("parentInboxModalBg").addEventListener("click", (e) => { if (e.target.id === "parentInboxModalBg") closeParentInboxModal(); });
   document.getElementById("closeKidHowToBtn").addEventListener("click", closeKidHowToModal);
   document.getElementById("kidHowToModalBg").addEventListener("click", (e) => { if (e.target.id === "kidHowToModalBg") closeKidHowToModal(); });
   document.getElementById("closeHowToBtn").addEventListener("click", closeHowToModal);
