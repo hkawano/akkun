@@ -421,7 +421,7 @@
         doc(path) {
           const ref = doc(firestore, path);
           return {
-            set(data) { return setDoc(ref, data); },
+            set(data, opts) { return setDoc(ref, data, opts); },
             update(data) { return updateDoc(ref, data); },
             delete() { return deleteDoc(ref); },
             onSnapshot(cb) {
@@ -867,6 +867,8 @@
   let removePendingId = null; // two-tap confirm state for removing a kid
   let removePendingBadgeId = null;
   let parentPin = null;       // stored PIN from settings doc (null = not set yet)
+  let settingsDoc = {};       // full settings/main doc (parentPin + one-time seed flags)
+  let settingsLoaded = false; // true once the first settings snapshot has arrived
   let parentUnlocked = false; // unlocked for this session only
   let pinMode = "enter";      // "enter" | "set"
 
@@ -1422,7 +1424,7 @@
     if (pinMode === "set") {
       if (!db) { toast(t("toastNotConnected")); return; }
       try {
-        await db.doc("settings/main").set({ parentPin: val, updatedAt: Date.now() });
+        await db.doc("settings/main").set({ parentPin: val, updatedAt: Date.now() }, { merge: true });
         parentPin = val;
         parentUnlocked = true;
         closePinModal();
@@ -1613,7 +1615,9 @@
     try {
       db.doc("settings/main").onSnapshot((doc) => {
         const data = doc && doc.data ? doc.data() : doc;
-        parentPin = data && data.parentPin ? data.parentPin : null;
+        settingsDoc = data || {};
+        parentPin = settingsDoc.parentPin || null;
+        settingsLoaded = true;
       });
     } catch (e) { console.error("settings subscription failed", e); }
 
@@ -1645,29 +1649,37 @@
       });
     } catch (e) { console.error("stats subscription failed", e); }
 
-    setTimeout(async () => {
-      if (Object.keys(kidsCache).length === 0) {
-        try {
-          for (const k of DEFAULT_KIDS) {
-            await db.doc("kids/" + k.id).set({ name: k.name, emoji: k.emoji, order: k.order, createdAt: Date.now() });
-          }
-        } catch (e) { /* fine if another viewer already seeded */ }
-      }
-      if (Object.keys(badgesCache).length === 0) {
-        try {
-          for (const b of DEFAULT_BADGES) {
-            await db.collection("badges").add({ name: b.name, emoji: b.emoji, xp: b.xp, createdAt: Date.now() });
-          }
-        } catch (e) { /* fine if another viewer already seeded */ }
-      }
-      if (Object.keys(tasksCache).length === 0) {
-        try {
-          await db.collection("tasks").add({ title: "Make your bed", assignedTo: "kid_yuki", xp: 10, status: "assigned", createdAt: Date.now() });
-          await db.collection("tasks").add({ title: "Finish math worksheet", assignedTo: "kid_yuki", xp: 20, status: "assigned", createdAt: Date.now() + 1 });
-          await db.collection("tasks").add({ title: "Practice piano 15 min", assignedTo: "kid_sora", xp: 20, status: "assigned", createdAt: Date.now() + 2 });
-        } catch (e) { /* fine if another viewer already seeded */ }
-      }
-    }, 900);
+    // Wait for the first settings/main snapshot so we know whether starter
+    // data has already been seeded before, rather than guessing from "is the
+    // collection empty right now" — which is also true right after someone
+    // deliberately deletes everything, and would otherwise bring it back.
+    const settingsDeadline = Date.now() + 5000;
+    while (!settingsLoaded && Date.now() < settingsDeadline) { await sleep(150); }
+
+    if (settingsLoaded && !settingsDoc.kidsSeeded) {
+      try {
+        for (const k of DEFAULT_KIDS) {
+          await db.doc("kids/" + k.id).set({ name: k.name, emoji: k.emoji, order: k.order, createdAt: Date.now() });
+        }
+        await db.doc("settings/main").set({ kidsSeeded: true }, { merge: true });
+      } catch (e) { /* fine if another viewer already seeded */ }
+    }
+    if (settingsLoaded && !settingsDoc.badgesSeeded) {
+      try {
+        for (const b of DEFAULT_BADGES) {
+          await db.collection("badges").add({ name: b.name, emoji: b.emoji, xp: b.xp, createdAt: Date.now() });
+        }
+        await db.doc("settings/main").set({ badgesSeeded: true }, { merge: true });
+      } catch (e) { /* fine if another viewer already seeded */ }
+    }
+    if (settingsLoaded && !settingsDoc.tasksSeeded) {
+      try {
+        await db.collection("tasks").add({ title: "Make your bed", assignedTo: "kid_yuki", xp: 10, status: "assigned", createdAt: Date.now() });
+        await db.collection("tasks").add({ title: "Finish math worksheet", assignedTo: "kid_yuki", xp: 20, status: "assigned", createdAt: Date.now() + 1 });
+        await db.collection("tasks").add({ title: "Practice piano 15 min", assignedTo: "kid_sora", xp: 20, status: "assigned", createdAt: Date.now() + 2 });
+        await db.doc("settings/main").set({ tasksSeeded: true }, { merge: true });
+      } catch (e) { /* fine if another viewer already seeded */ }
+    }
   }
 
   // ================= event bindings =================
