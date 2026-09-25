@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QuestLog — Family Task Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@500;700&family=Noto+Sans+KR:wght@500;700&family=Noto+Sans+SC:wght@500;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1b1330;
+    --night: #211a3d;
+    --panel: #f6f3ff;
+    --gold: #ffb648;
+    --gold-deep: #e8952c;
+    --lime: #9be564;
+    --coral: #ff6f6f;
+    --sky: #6fc8ff;
+    --line: rgba(27,19,48,0.12);
+    --line-soft: rgba(255,255,255,0.14);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: 'Inter', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans Devanagari', system-ui, sans-serif;
+    background:
+      radial-gradient(1200px 500px at 15% -10%, #372a63 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, #1a2a52 0%, transparent 55%),
+      var(--night);
+    color: var(--panel);
+    min-height: 100%;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .display { font-family: 'Baloo 2', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans Devanagari', system-ui, sans-serif; }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 20px 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    background: rgba(33,26,61,0.86);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(155deg, var(--gold) 0%, var(--coral) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 19px; transform: rotate(-6deg);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.18);
+    flex-shrink: 0;
+  }
+  .brand h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: 0.2px; }
+  .brand p { margin: 0; font-size: 12px; color: #bcb3e0; }
+
+  .topbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  .lang-select {
+    background: rgba(255,255,255,0.08); color: #e6e0ff; border: 1px solid var(--line-soft);
+    border-radius: 999px; padding: 8px 12px; font-size: 12.5px; font-family: 'Inter'; font-weight: 600;
+    cursor: pointer; appearance: none; -webkit-appearance: none;
+  }
+  .lang-select:focus-visible, button:focus-visible, .kid-chip:focus-visible, .stamp-chip:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+
+  .role-switch { display: flex; background: rgba(255,255,255,0.08); border-radius: 999px; padding: 3px; border: 1px solid var(--line-soft); }
+  .role-switch button {
+    border: none; background: transparent; color: #cfc7ec; font-family: inherit;
+    font-weight: 600; font-size: 13px; padding: 7px 14px; border-radius: 999px; cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  .role-switch button.active { background: var(--gold); color: #2a1c00; }
+
+  .lock-btn {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line-soft); background: rgba(255,255,255,0.08);
+    color: #e6e0ff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px;
+  }
+
+  /* ---------- Layout ---------- */
+  .shell { max-width: 1180px; margin: 0 auto; padding: 22px 20px 60px; display: grid; grid-template-columns: 1fr; gap: 22px; }
+  @media (min-width: 900px) { .shell { grid-template-columns: 1.55fr 1fr; align-items: start; } }
+
+  .kid-picker { display: flex; gap: 8px; flex-wrap: wrap; margin: 2px 0 18px; }
+  .kid-chip {
+    display: flex; align-items: center; gap: 8px; padding: 7px 12px 7px 7px; border-radius: 999px; cursor: pointer;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--line-soft); font-size: 13px; font-weight: 600; color: #d8d1f2;
+  }
+  .kid-chip.active { background: rgba(255,182,72,0.16); border-color: var(--gold); color: #ffdba0; }
+  .kid-avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; background: var(--lime); color: #14330a; flex-shrink: 0; }
+
+  /* ---------- Stat strip ---------- */
+  .stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+  .stat-card { background: linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02)); border: 1px solid var(--line-soft); border-radius: 16px; padding: 14px 14px 12px; }
+  .stat-card .num { font-family: 'Baloo 2', inherit; font-size: 26px; font-weight: 700; line-height: 1; }
+  .stat-card .lbl { font-size: 11.5px; color: #b6adda; margin-top: 4px; }
+  .stat-card.xp .num { color: var(--gold); }
+  .stat-card.streak .num { color: var(--coral); }
+  .stat-card.badges .num { color: var(--sky); }
+
+  /* ---------- Quest board ---------- */
+  .badge-strip { display: flex; gap: 8px; flex-wrap: wrap; margin: -8px 0 18px; }
+  .badge-chip {
+    width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 19px; background: linear-gradient(160deg, rgba(255,182,72,0.22), rgba(255,182,72,0.06));
+    border: 1px solid rgba(255,182,72,0.35); cursor: pointer; flex-shrink: 0;
+  }
+  .badge-chip.locked { background: rgba(255,255,255,0.04); border-color: var(--line-soft); opacity: 0.4; filter: grayscale(1); }
+  .badge-empty-hint { font-size: 12px; color: #8f85b3; }
+
+  .board-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; gap: 10px; flex-wrap: wrap; }
+  .board-head h2 { margin: 0; font-size: 20px; }
+  .add-btn { border: none; cursor: pointer; font-family: inherit; font-weight: 700; font-size: 13px; background: var(--lime); color: #14330a; padding: 8px 14px; border-radius: 10px; }
+  .columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 640px) { .columns { grid-template-columns: 1fr; } }
+  .col { background: rgba(255,255,255,0.045); border: 1px solid var(--line-soft); border-radius: 16px; padding: 12px; min-height: 90px; }
+  .col-title { font-size: 12.5px; font-weight: 700; color: #b6adda; margin: 2px 4px 10px; display: flex; justify-content: space-between; gap: 6px; }
+  .col-title span.count { color: #82789f; font-weight: 600; }
+
+  .task-card { background: var(--panel); color: var(--ink); border-radius: 14px; padding: 12px 12px 10px; margin-bottom: 10px; box-shadow: 0 3px 0 rgba(0,0,0,0.16); }
+  .task-card:last-child { margin-bottom: 0; }
+  .task-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .task-title { font-weight: 700; font-size: 14.5px; line-height: 1.25; }
+  .task-meta { font-size: 11.5px; color: #6c6488; margin-top: 3px; }
+  .xp-pill { flex-shrink: 0; background: #fff2da; color: var(--gold-deep); font-weight: 700; font-size: 11.5px; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+  .task-actions { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .btn { border: none; border-radius: 9px; font-family: inherit; font-weight: 700; font-size: 12.5px; padding: 7px 11px; cursor: pointer; }
+  .btn-done { background: var(--night); color: #fff; }
+  .btn-approve { background: var(--lime); color: #14330a; }
+  .btn-reject { background: #ffe1e1; color: #a02323; }
+  .btn-ghost { background: transparent; border: 1px solid var(--line); color: #6c6488; }
+  .status-note { font-size: 11.5px; margin-top: 8px; color: #8b3fd4; font-weight: 600; }
+  .status-note.approved { color: #2f8a12; }
+  .status-note.rejected { color: #c23434; }
+  .empty-col { font-size: 12.5px; color: #6c6488; opacity: 0.6; padding: 10px 4px; }
+
+  /* ---------- Chat panel ---------- */
+  .chat-panel { background: rgba(255,255,255,0.045); border: 1px solid var(--line-soft); border-radius: 18px; display: flex; flex-direction: column; height: 560px; overflow: hidden; }
+  .chat-head { padding: 14px 16px; border-bottom: 1px solid var(--line-soft); display:flex; align-items:center; gap:8px; }
+  .chat-head h2 { margin: 0; font-size: 16px; }
+  .chat-head .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); flex-shrink: 0; }
+  .chat-stream { flex: 1; overflow-y: auto; padding: 14px 14px 6px; display: flex; flex-direction: column; gap: 10px; }
+  .msg { max-width: 84%; }
+  .msg.me { align-self: flex-end; }
+  .msg-bubble { background: rgba(255,255,255,0.09); border-radius: 13px 13px 13px 3px; padding: 8px 11px; font-size: 13.5px; line-height: 1.4; }
+  .msg.me .msg-bubble { background: var(--gold); color: #2a1c00; border-radius: 13px 13px 3px 13px; }
+  .msg-sender { font-size: 11px; color: #9d92c4; margin: 0 2px 3px; font-weight: 600; }
+  .msg.me .msg-sender { text-align: right; }
+  .msg-card { background: var(--panel); color: var(--ink); border-radius: 13px; padding: 10px 11px; font-size: 13px; border: 1px solid rgba(0,0,0,0.06); }
+  .msg-card .mc-title { font-weight: 700; font-size: 13.5px; }
+  .msg-card .mc-status { font-size: 11.5px; margin-top: 3px; font-weight: 600; color: #8b3fd4; }
+  .msg-card .mc-status.approved { color: #2f8a12; }
+  .msg-card .mc-status.rejected { color: #c23434; }
+  .msg-stamp .msg-bubble { font-weight: 700; }
+  .msg-voice .msg-bubble { display: flex; align-items: center; gap: 8px; }
+
+  .chat-input-area { border-top: 1px solid var(--line-soft); padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)); }
+  .stamp-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; }
+  .stamp-chip { flex-shrink: 0; border: 1px solid var(--line-soft); background: rgba(255,255,255,0.06); color: #e6e0ff; border-radius: 999px; padding: 6px 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .stamp-chip:active { background: var(--gold); color: #2a1c00; }
+  .compose-row { display: flex; gap: 7px; align-items: center; }
+  .compose-row input[type=text] { flex: 1; border: 1px solid var(--line-soft); background: rgba(255,255,255,0.07); color: #fff; border-radius: 999px; padding: 10px 14px; font-size: 13.5px; font-family: inherit; min-width: 0; }
+  .compose-row input::placeholder { color: #8f85b3; }
+  .round-btn { width: 38px; height: 38px; border-radius: 50%; border: none; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .round-btn.send { background: var(--gold); color: #2a1c00; }
+  .round-btn.voice { background: rgba(255,255,255,0.08); color: #e6e0ff; border: 1px solid var(--line-soft); }
+  .round-btn.voice.recording { background: var(--coral); color: #fff; }
+
+  /* ---------- Modal ---------- */
+  .modal-bg { position: fixed; inset: 0; background: rgba(10,7,24,0.6); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; z-index: 50; padding: 20px; }
+  .modal-bg.open { display: flex; }
+  .modal { background: var(--panel); color: var(--ink); border-radius: 18px; padding: 20px; width: 100%; max-width: 380px; }
+  .modal h3 { margin: 0 0 14px; font-size: 18px; }
+  .modal p.hint { font-size: 12.5px; color: #6c6488; margin: -8px 0 14px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: #6c6488; margin-bottom: 5px; }
+  .field input[type=text], .field input[type=password], .field input[type=tel], .field select { width: 100%; padding: 9px 11px; border-radius: 9px; border: 1px solid var(--line); font-size: 14px; font-family: inherit; letter-spacing: 0.5px; }
+  .field-row { display: flex; gap: 10px; }
+  .field-row .field { flex: 1; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
+  .pin-error { font-size: 12.5px; color: #c23434; font-weight: 600; margin: -6px 0 10px; min-height: 1em; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--night); color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: all .25s ease; z-index: 60; border: 1px solid var(--line-soft); max-width: 90vw; text-align: center; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 8px; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">🗺️</div>
+    <div>
+      <h1>QuestLog</h1>
+      <p id="brandSubtitle">Family task board</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <select class="lang-select" id="langSelect" aria-label="Language"></select>
+    <div class="role-switch" id="roleSwitch">
+      <button data-role="child" id="roleChildBtn"></button>
+      <button data-role="parent" id="roleParentBtn"></button>
+    </div>
+    <button class="lock-btn" id="lockBtn" title="Lock parent mode" style="display:none;">🔒</button>
+  </div>
+</div>
+
+<div class="shell">
+  <div>
+    <div class="kid-picker" id="kidPicker"></div>
+
+    <div class="stat-strip">
+      <div class="stat-card xp"><div class="num" id="statXp">0</div><div class="lbl" id="statXpLbl"></div></div>
+      <div class="stat-card streak"><div class="num" id="statStreak">0</div><div class="lbl" id="statStreakLbl"></div></div>
+      <div class="stat-card badges" id="statBadgesCard" role="button" tabindex="0" style="cursor:pointer;"><div class="num" id="statBadges">0</div><div class="lbl" id="statBadgesLbl"></div></div>
+    </div>
+
+    <div class="badge-strip" id="badgeStrip"></div>
+
+    <div class="board-head">
+      <h2 id="questBoardHeading"></h2>
+      <div style="display:flex; gap:8px; flex-wrap: wrap;">
+        <button class="add-btn manage-btn" id="manageBadgesBtn" style="display:none; background:rgba(255,255,255,0.12); color:#e6e0ff;"></button>
+        <button class="add-btn manage-btn" id="manageKidsBtn" style="display:none; background:rgba(255,255,255,0.12); color:#e6e0ff;"></button>
+        <button class="add-btn" id="addTaskBtn"></button>
+      </div>
+    </div>
+    <div class="columns">
+      <div class="col"><div class="col-title"><span id="colAssignedLbl"></span> <span class="count" id="cnt-assigned">0</span></div><div id="col-assigned"></div></div>
+      <div class="col"><div class="col-title"><span id="colPendingLbl"></span> <span class="count" id="cnt-pending">0</span></div><div id="col-pending"></div></div>
+      <div class="col"><div class="col-title"><span id="colDoneLbl"></span> <span class="count" id="cnt-done">0</span></div><div id="col-done"></div></div>
+    </div>
+  </div>
+
+  <div class="chat-panel">
+    <div class="chat-head"><span class="dot"></span><h2 id="familyChatHeading"></h2></div>
+    <div class="chat-stream" id="chatStream"></div>
+    <div class="chat-input-area">
+      <div class="stamp-row" id="stampRow"></div>
+      <div class="compose-row">
+        <button class="round-btn voice" id="voiceBtn" title="Voice clip">🎤</button>
+        <input type="text" id="chatInput" maxlength="200">
+        <button class="round-btn send" id="sendBtn" title="Send">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="taskModalBg">
+  <div class="modal">
+    <h3 id="modalNewQuestTitle"></h3>
+    <div class="field">
+      <label id="fieldTitleLbl"></label>
+      <input type="text" id="newTaskTitle" maxlength="60">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label id="fieldAssignLbl"></label>
+        <select id="newTaskKid"></select>
+      </div>
+      <div class="field">
+        <label id="fieldXpLbl"></label>
+        <select id="newTaskXp">
+          <option value="10" id="xpQuickOpt"></option>
+          <option value="20" selected id="xpNormalOpt"></option>
+          <option value="35" id="xpBigOpt"></option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="cancelTaskBtn"></button>
+      <button class="btn btn-approve" id="createTaskBtn"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="badgesViewModalBg">
+  <div class="modal" style="max-width:420px;">
+    <h3 id="badgesViewTitle"></h3>
+    <p class="hint" id="badgesViewHint"></p>
+    <div id="badgesViewList" style="display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="closeBadgesViewBtn"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="manageBadgesModalBg">
+  <div class="modal" style="max-width:440px;">
+    <h3 id="manageBadgesTitle"></h3>
+    <p class="hint" id="manageBadgesHint"></p>
+    <div id="badgesListWrap" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px; max-height:260px; overflow-y:auto;"></div>
+    <div style="border-top:1px solid var(--line); padding-top:14px;">
+      <div class="field-row">
+        <div class="field" style="flex:0 0 56px;">
+          <label id="newBadgeEmojiLbl"></label>
+          <input type="text" id="newBadgeEmoji" maxlength="4" placeholder="🏅" style="text-align:center;">
+        </div>
+        <div class="field" style="flex:1;">
+          <label id="newBadgeNameLbl"></label>
+          <input type="text" id="newBadgeName" maxlength="24">
+        </div>
+        <div class="field" style="flex:0 0 84px;">
+          <label id="newBadgeXpLbl"></label>
+          <input type="text" inputmode="numeric" id="newBadgeXp" maxlength="5" placeholder="100">
+        </div>
+      </div>
+      <div class="modal-actions" style="justify-content:flex-start;">
+        <button class="btn btn-approve" id="addBadgeBtn"></button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="closeManageBadgesBtn"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="kidsModalBg">
+  <div class="modal" style="max-width:420px;">
+    <h3 id="manageKidsTitle"></h3>
+    <p class="hint" id="manageKidsHint"></p>
+    <div id="kidsListWrap" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px; max-height:260px; overflow-y:auto;"></div>
+    <div style="border-top:1px solid var(--line); padding-top:14px;">
+      <div class="field-row">
+        <div class="field" style="flex:0 0 64px;">
+          <label id="newKidEmojiLbl"></label>
+          <input type="text" id="newKidEmoji" maxlength="4" placeholder="🧒" style="text-align:center;">
+        </div>
+        <div class="field" style="flex:1;">
+          <label id="newKidNameLbl"></label>
+          <input type="text" id="newKidName" maxlength="24">
+        </div>
+      </div>
+      <div class="modal-actions" style="justify-content:flex-start;">
+        <button class="btn btn-approve" id="addKidBtn"></button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="closeKidsModalBtn"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="pinModalBg">
+  <div class="modal">
+    <h3 id="pinModalTitle"></h3>
+    <p class="hint" id="pinModalHint"></p>
+    <div class="field">
+      <label id="pinFieldLbl"></label>
+      <input type="password" inputmode="numeric" pattern="[0-9]*" id="pinInput" maxlength="6" placeholder="••••">
+    </div>
+    <div class="pin-error" id="pinError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="pinCancelBtn"></button>
+      <button class="btn btn-approve" id="pinSubmitBtn"></button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  // ---- Firebase setup (used when this file runs outside Claude, e.g. on GitHub Pages) ----
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import {
+    getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB7Wl9rmyf_sHjfm78-NMH9v_3jdiLEWLY",
+    authDomain: "questlog-family.firebaseapp.com",
+    projectId: "questlog-family",
+    storageBucket: "questlog-family.firebasestorage.app",
+    messagingSenderId: "387818452437",
+    appId: "1:387818452437:web:b367b8e32f960d3424395c"
+  };
+
+  window.__firebaseDbPromise = (async () => {
+    try {
+      const app = initializeApp(firebaseConfig);
+      const firestore = getFirestore(app);
+
+      // Wraps the Firestore modular SDK behind the same tiny interface the app
+      // already speaks to Claude's artifact "db" capability, so the rest of
+      // the app's code needs zero changes.
+      return {
+        collection(path) {
+          return {
+            onSnapshot(cb) {
+              return onSnapshot(collection(firestore, path), (snap) => {
+                cb(snap.docs.map(d => ({ id: d.id, data: () => d.data() })));
+              });
+            },
+            add(data) { return addDoc(collection(firestore, path), data); }
+          };
+        },
+        doc(path) {
+          const ref = doc(firestore, path);
+          return {
+            set(data) { return setDoc(ref, data); },
+            update(data) { return updateDoc(ref, data); },
+            delete() { return deleteDoc(ref); },
+            onSnapshot(cb) {
+              return onSnapshot(ref, (snap) => { cb({ id: snap.id, data: () => snap.data() }); });
+            }
+          };
+        }
+      };
+    } catch (e) {
+      console.error("Firebase init failed", e);
+      return null;
+    }
+  })();
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  // ================= i18n =================
+  const LANGS = {
+    en: { name: "English", dir: "ltr", strings: {
+      subtitle: "Family task board", kidMode: "Kid mode", parentMode: "Parent mode",
+      statXp: "XP earned", statStreak: "day streak", statBadges: "badges",
+      questBoard: "Quest board", newQuest: "+ New quest",
+      colAssigned: "To do", colPending: "Waiting on a grown-up", colDone: "Done",
+      emptyAssigned: "No quests yet.", emptyPending: "Nothing waiting.", emptyDone: "Nothing finished yet.", emptyChat: "No messages yet. Say hi! 👋",
+      markDone: "Mark done", approveBtn: "Approve", sendBackBtn: "Send back", reassignBtn: "Reassign",
+      waitingFor: "Waiting for {name}", waitingReview: "Waiting for review…",
+      approvedNote: "✓ Approved · +{xp} XP", sentBackNote: "Sent back — try again",
+      familyChat: "Family chat", chatPlaceholder: "Say something…",
+      stamps: ["👍 Done!", "❓ Need help", "⏰ 5 more mins", "🎉 Yay!", "😴 Not yet"],
+      modalNewQuest: "New quest", fieldTitle: "Task title", fieldTitlePh: "e.g. Feed the cat",
+      fieldAssign: "Assign to", fieldXp: "XP value", xpQuick: "10 (quick)", xpNormal: "20 (normal)", xpBig: "35 (big)",
+      cancel: "Cancel", createQuest: "Create quest",
+      toastQuestAdded: "Quest added!", toastGiveTitle: "Give the quest a title first.",
+      toastNotConnected: "Not connected yet — try again in a moment.", toastCouldntAdd: "Couldn't add that quest — try again.",
+      toastSentReview: "Sent for review! 🎉", toastApproved: "Approved!", toastSentBack: "Sent back to try again.",
+      toastMsgFail: "Message didn't send.", toastRecording: "Recording… tap again to send", toastNoSave: "Couldn't connect to the database — check your Firebase setup and internet connection.",
+      toastConflict: "That didn't save — someone may have just updated it.",
+      pinSetTitle: "Set a Parent PIN", pinEnterTitle: "Enter Parent PIN",
+      pinCreateHint: "This keeps kids out of Parent mode. Pick a 4–6 digit PIN.",
+      pinEnterHint: "Enter the Parent PIN to continue.",
+      pinFieldLbl: "PIN", pinIncorrect: "That PIN isn't right — try again.", pinTooShort: "Use at least 4 digits.",
+      unlock: "Unlock", setPin: "Set PIN",
+      cardSentReview: "Sent for review", cardApproved: "✓ Approved", cardSentBack: "Sent back",
+      voiceClip: "Voice clip · {n}s", languageLabel: "Language",
+      manageKidsBtn: "Manage kids", manageKidsTitle: "Manage kids", manageKidsHint: "Edit names, change emoji, or add another kid.",
+      newKidEmojiLbl: "Emoji", newKidNameLbl: "Name", addKidBtn: "+ Add kid",
+      saveBtn: "Save", removeBtn: "Remove", removeConfirmBtn: "Tap again to remove",
+      toastKidNameRequired: "Give this kid a name.", toastKidAdded: "Kid added!", toastKidRemoved: "Removed.", toastKidSaved: "Saved.",
+      toastKidsMin: "You need at least one kid.",
+      badgesViewHint: "Tap a badge to see what it takes.", badgesNone: "No badges set up yet.",
+      badgeUnlockedLbl: "Unlocked!", xpToGo: "{n} XP to go",
+      manageBadgesBtn: "Manage badges", manageBadgesTitle: "Manage badges", manageBadgesHint: "Set the emoji, name, and XP needed for each badge.",
+      addBadgeBtn: "+ Add badge", toastBadgeNameRequired: "Give this badge a name.", toastBadgeXpInvalid: "Enter a valid XP amount.",
+      toastBadgeAdded: "Badge added!", toastBadgeSaved: "Saved.", toastBadgeUnlocked: "New badge: {name}!",
+      badgeUnlockedNote: "New badge: {name}!"
+    }},
+    ja: { name: "日本語", dir: "ltr", strings: {
+      subtitle: "家族のタスクボード", kidMode: "こどもモード", parentMode: "保護者モード",
+      statXp: "獲得XP", statStreak: "日連続", statBadges: "バッジ",
+      questBoard: "クエストボード", newQuest: "+ 新しいクエスト",
+      colAssigned: "やること", colPending: "確認待ち", colDone: "完了",
+      emptyAssigned: "まだクエストがありません。", emptyPending: "確認待ちはありません。", emptyDone: "まだ完了していません。", emptyChat: "メッセージはまだありません。挨拶してみよう！👋",
+      markDone: "できた！", approveBtn: "承認する", sendBackBtn: "やり直し", reassignBtn: "再挑戦",
+      waitingFor: "{name}さんの番です", waitingReview: "確認を待っています…",
+      approvedNote: "✓ 承認済み · +{xp} XP", sentBackNote: "やり直しになりました",
+      familyChat: "家族チャット", chatPlaceholder: "メッセージを入力…",
+      stamps: ["👍 できた！", "❓ 助けて", "⏰ あと5分", "🎉 やったー！", "😴 まだ"],
+      modalNewQuest: "新しいクエスト", fieldTitle: "タスク名", fieldTitlePh: "例：ねこにごはん",
+      fieldAssign: "担当", fieldXp: "XPの値", xpQuick: "10（かんたん）", xpNormal: "20（ふつう）", xpBig: "35（たいへん）",
+      cancel: "キャンセル", createQuest: "クエストを作成",
+      toastQuestAdded: "クエストを追加しました！", toastGiveTitle: "タスク名を入力してください。",
+      toastNotConnected: "まだ接続できていません。少し待ってから試してください。", toastCouldntAdd: "追加できませんでした。もう一度お試しください。",
+      toastSentReview: "確認に送りました！🎉", toastApproved: "承認しました！", toastSentBack: "やり直しに戻しました。",
+      toastMsgFail: "送信できませんでした。", toastRecording: "録音中…もう一度タップで送信", toastNoSave: "保存されていません（未接続）。",
+      toastConflict: "保存できませんでした。他の人が更新したかもしれません。",
+      pinSetTitle: "保護者PINを設定", pinEnterTitle: "保護者PINを入力",
+      pinCreateHint: "子どもが保護者モードに入れないようにします。4〜6桁のPINを設定してください。",
+      pinEnterHint: "続けるには保護者PINを入力してください。",
+      pinFieldLbl: "PIN", pinIncorrect: "PINが違います。もう一度お試しください。", pinTooShort: "4桁以上にしてください。",
+      unlock: "解除", setPin: "PINを設定",
+      cardSentReview: "確認に送信", cardApproved: "✓ 承認済み", cardSentBack: "やり直し",
+      voiceClip: "ボイスメッセージ · {n}秒", languageLabel: "言語",
+      manageKidsBtn: "こどもの管理", manageKidsTitle: "こどもの管理", manageKidsHint: "名前や絵文字を変更したり、こどもを追加できます。",
+      newKidEmojiLbl: "絵文字", newKidNameLbl: "名前", addKidBtn: "+ こどもを追加",
+      saveBtn: "保存", removeBtn: "削除", removeConfirmBtn: "もう一度タップで削除",
+      toastKidNameRequired: "名前を入力してください。", toastKidAdded: "追加しました！", toastKidRemoved: "削除しました。", toastKidSaved: "保存しました。",
+      toastKidsMin: "少なくとも1人は必要です。",
+      badgesViewHint: "バッジをタップすると条件が見られます。", badgesNone: "まだバッジがありません。",
+      badgeUnlockedLbl: "獲得済み！", xpToGo: "あと{n} XP",
+      manageBadgesBtn: "バッジの管理", manageBadgesTitle: "バッジの管理", manageBadgesHint: "各バッジの絵文字・名前・必要XPを設定します。",
+      addBadgeBtn: "+ バッジを追加", toastBadgeNameRequired: "バッジの名前を入力してください。", toastBadgeXpInvalid: "正しいXPの数値を入力してください。",
+      toastBadgeAdded: "バッジを追加しました！", toastBadgeSaved: "保存しました。", toastBadgeUnlocked: "新しいバッジ：{name}！",
+      badgeUnlockedNote: "新しいバッジ：{name}！"
+    }},
+    fr: { name: "Français", dir: "ltr", strings: {
+      subtitle: "Tableau des tâches familiales", kidMode: "Mode enfant", parentMode: "Mode parent",
+      statXp: "XP gagnés", statStreak: "jours de série", statBadges: "badges",
+      questBoard: "Tableau des quêtes", newQuest: "+ Nouvelle quête",
+      colAssigned: "À faire", colPending: "En attente d'un adulte", colDone: "Terminé",
+      emptyAssigned: "Aucune quête pour l'instant.", emptyPending: "Rien en attente.", emptyDone: "Rien de terminé pour l'instant.", emptyChat: "Aucun message. Dis bonjour ! 👋",
+      markDone: "Terminé", approveBtn: "Approuver", sendBackBtn: "Renvoyer", reassignBtn: "Réessayer",
+      waitingFor: "En attente de {name}", waitingReview: "En attente de validation…",
+      approvedNote: "✓ Approuvé · +{xp} XP", sentBackNote: "Renvoyé — à refaire",
+      familyChat: "Chat familial", chatPlaceholder: "Écris quelque chose…",
+      stamps: ["👍 Fait !", "❓ Besoin d'aide", "⏰ Encore 5 min", "🎉 Youpi !", "😴 Pas encore"],
+      modalNewQuest: "Nouvelle quête", fieldTitle: "Titre de la tâche", fieldTitlePh: "ex. Nourrir le chat",
+      fieldAssign: "Attribuer à", fieldXp: "Valeur en XP", xpQuick: "10 (rapide)", xpNormal: "20 (normal)", xpBig: "35 (important)",
+      cancel: "Annuler", createQuest: "Créer la quête",
+      toastQuestAdded: "Quête ajoutée !", toastGiveTitle: "Donne d'abord un titre à la quête.",
+      toastNotConnected: "Pas encore connecté — réessaie dans un instant.", toastCouldntAdd: "Impossible d'ajouter cette quête — réessaie.",
+      toastSentReview: "Envoyé pour validation ! 🎉", toastApproved: "Approuvé !", toastSentBack: "Renvoyé pour être refait.",
+      toastMsgFail: "Le message n'a pas été envoyé.", toastRecording: "Enregistrement… retape pour envoyer", toastNoSave: "Fonctionne sans sauvegarde — les données ne seront pas conservées.",
+      toastConflict: "Ça n'a pas été enregistré — quelqu'un vient peut-être de le modifier.",
+      pinSetTitle: "Définir un code parent", pinEnterTitle: "Entrer le code parent",
+      pinCreateHint: "Cela empêche les enfants d'accéder au mode parent. Choisis un code à 4–6 chiffres.",
+      pinEnterHint: "Entre le code parent pour continuer.",
+      pinFieldLbl: "Code", pinIncorrect: "Ce code n'est pas correct — réessaie.", pinTooShort: "Utilise au moins 4 chiffres.",
+      unlock: "Déverrouiller", setPin: "Définir le code",
+      cardSentReview: "Envoyé pour validation", cardApproved: "✓ Approuvé", cardSentBack: "Renvoyé",
+      voiceClip: "Message vocal · {n}s", languageLabel: "Langue",
+      manageKidsBtn: "Gérer les enfants", manageKidsTitle: "Gérer les enfants", manageKidsHint: "Modifie les noms, change l'emoji ou ajoute un autre enfant.",
+      newKidEmojiLbl: "Emoji", newKidNameLbl: "Prénom", addKidBtn: "+ Ajouter un enfant",
+      saveBtn: "Enregistrer", removeBtn: "Supprimer", removeConfirmBtn: "Retape pour confirmer",
+      toastKidNameRequired: "Donne un prénom à cet enfant.", toastKidAdded: "Enfant ajouté !", toastKidRemoved: "Supprimé.", toastKidSaved: "Enregistré.",
+      toastKidsMin: "Il faut garder au moins un enfant.",
+      badgesViewHint: "Touche un badge pour voir ce qu'il faut faire.", badgesNone: "Aucun badge pour l'instant.",
+      badgeUnlockedLbl: "Débloqué !", xpToGo: "Encore {n} XP",
+      manageBadgesBtn: "Gérer les badges", manageBadgesTitle: "Gérer les badges", manageBadgesHint: "Définis l'emoji, le nom et les XP nécessaires pour chaque badge.",
+      addBadgeBtn: "+ Ajouter un badge", toastBadgeNameRequired: "Donne un nom à ce badge.", toastBadgeXpInvalid: "Entre un nombre d'XP valide.",
+      toastBadgeAdded: "Badge ajouté !", toastBadgeSaved: "Enregistré.", toastBadgeUnlocked: "Nouveau badge : {name} !",
+      badgeUnlockedNote: "Nouveau badge : {name} !"
+    }},
+    es: { name: "Español", dir: "ltr", strings: {
+      subtitle: "Tablero de tareas familiares", kidMode: "Modo niño", parentMode: "Modo padres",
+      statXp: "XP ganados", statStreak: "días de racha", statBadges: "insignias",
+      questBoard: "Tablero de misiones", newQuest: "+ Nueva misión",
+      colAssigned: "Por hacer", colPending: "Esperando a un adulto", colDone: "Hecho",
+      emptyAssigned: "Aún no hay misiones.", emptyPending: "Nada en espera.", emptyDone: "Nada terminado todavía.", emptyChat: "Sin mensajes todavía. ¡Saluda! 👋",
+      markDone: "Marcar hecho", approveBtn: "Aprobar", sendBackBtn: "Devolver", reassignBtn: "Reintentar",
+      waitingFor: "Esperando a {name}", waitingReview: "Esperando revisión…",
+      approvedNote: "✓ Aprobado · +{xp} XP", sentBackNote: "Devuelto — inténtalo de nuevo",
+      familyChat: "Chat familiar", chatPlaceholder: "Escribe algo…",
+      stamps: ["👍 ¡Hecho!", "❓ Necesito ayuda", "⏰ 5 min más", "🎉 ¡Genial!", "😴 Todavía no"],
+      modalNewQuest: "Nueva misión", fieldTitle: "Título de la tarea", fieldTitlePh: "ej. Alimentar al gato",
+      fieldAssign: "Asignar a", fieldXp: "Valor en XP", xpQuick: "10 (rápida)", xpNormal: "20 (normal)", xpBig: "35 (grande)",
+      cancel: "Cancelar", createQuest: "Crear misión",
+      toastQuestAdded: "¡Misión añadida!", toastGiveTitle: "Ponle un título a la misión primero.",
+      toastNotConnected: "Aún no conectado — inténtalo de nuevo en un momento.", toastCouldntAdd: "No se pudo añadir la misión — inténtalo de nuevo.",
+      toastSentReview: "¡Enviado a revisión! 🎉", toastApproved: "¡Aprobado!", toastSentBack: "Devuelto para intentarlo de nuevo.",
+      toastMsgFail: "El mensaje no se envió.", toastRecording: "Grabando… toca de nuevo para enviar", toastNoSave: "Funcionando sin guardar — los datos no se conservarán.",
+      toastConflict: "Eso no se guardó — puede que alguien lo haya actualizado.",
+      pinSetTitle: "Crear un PIN de padres", pinEnterTitle: "Introduce el PIN de padres",
+      pinCreateHint: "Esto evita que los niños entren en modo padres. Elige un PIN de 4 a 6 dígitos.",
+      pinEnterHint: "Introduce el PIN de padres para continuar.",
+      pinFieldLbl: "PIN", pinIncorrect: "Ese PIN no es correcto — inténtalo de nuevo.", pinTooShort: "Usa al menos 4 dígitos.",
+      unlock: "Desbloquear", setPin: "Crear PIN",
+      cardSentReview: "Enviado a revisión", cardApproved: "✓ Aprobado", cardSentBack: "Devuelto",
+      voiceClip: "Nota de voz · {n}s", languageLabel: "Idioma",
+      manageKidsBtn: "Gestionar niños", manageKidsTitle: "Gestionar niños", manageKidsHint: "Edita nombres, cambia el emoji o añade otro niño.",
+      newKidEmojiLbl: "Emoji", newKidNameLbl: "Nombre", addKidBtn: "+ Añadir niño",
+      saveBtn: "Guardar", removeBtn: "Eliminar", removeConfirmBtn: "Toca de nuevo para eliminar",
+      toastKidNameRequired: "Ponle un nombre a este niño.", toastKidAdded: "¡Niño añadido!", toastKidRemoved: "Eliminado.", toastKidSaved: "Guardado.",
+      toastKidsMin: "Debe quedar al menos un niño.",
+      badgesViewHint: "Toca una insignia para ver qué se necesita.", badgesNone: "Todavía no hay insignias configuradas.",
+      badgeUnlockedLbl: "¡Desbloqueada!", xpToGo: "Faltan {n} XP",
+      manageBadgesBtn: "Gestionar insignias", manageBadgesTitle: "Gestionar insignias", manageBadgesHint: "Define el emoji, el nombre y los XP necesarios para cada insignia.",
+      addBadgeBtn: "+ Añadir insignia", toastBadgeNameRequired: "Ponle un nombre a esta insignia.", toastBadgeXpInvalid: "Introduce una cantidad de XP válida.",
+      toastBadgeAdded: "¡Insignia añadida!", toastBadgeSaved: "Guardado.", toastBadgeUnlocked: "¡Nueva insignia: {name}!",
+      badgeUnlockedNote: "¡Nueva insignia: {name}!"
+    }},
+    ko: { name: "한국어", dir: "ltr", strings: {
+      subtitle: "가족 할일 보드", kidMode: "어린이 모드", parentMode: "부모 모드",
+      statXp: "획득 XP", statStreak: "일 연속", statBadges: "배지",
+      questBoard: "퀘스트 보드", newQuest: "+ 새 퀘스트",
+      colAssigned: "할 일", colPending: "확인 대기 중", colDone: "완료",
+      emptyAssigned: "아직 퀘스트가 없어요.", emptyPending: "대기 중인 항목이 없어요.", emptyDone: "완료된 항목이 없어요.", emptyChat: "메시지가 없어요. 인사해 보세요! 👋",
+      markDone: "완료로 표시", approveBtn: "승인", sendBackBtn: "다시 하기", reassignBtn: "재도전",
+      waitingFor: "{name} 차례예요", waitingReview: "확인을 기다리는 중…",
+      approvedNote: "✓ 승인됨 · +{xp} XP", sentBackNote: "다시 해야 해요",
+      familyChat: "가족 채팅", chatPlaceholder: "메시지를 입력하세요…",
+      stamps: ["👍 완료!", "❓ 도와주세요", "⏰ 5분만 더", "🎉 신난다!", "😴 아직요"],
+      modalNewQuest: "새 퀘스트", fieldTitle: "할 일 제목", fieldTitlePh: "예: 고양이 밥 주기",
+      fieldAssign: "담당자", fieldXp: "XP 값", xpQuick: "10 (간단)", xpNormal: "20 (보통)", xpBig: "35 (큰 일)",
+      cancel: "취소", createQuest: "퀘스트 만들기",
+      toastQuestAdded: "퀘스트가 추가되었어요!", toastGiveTitle: "먼저 퀘스트 제목을 입력하세요.",
+      toastNotConnected: "아직 연결되지 않았어요 — 잠시 후 다시 시도하세요.", toastCouldntAdd: "추가하지 못했어요 — 다시 시도하세요.",
+      toastSentReview: "확인 요청을 보냈어요! 🎉", toastApproved: "승인되었어요!", toastSentBack: "다시 하도록 돌려보냈어요.",
+      toastMsgFail: "메시지를 보내지 못했어요.", toastRecording: "녹음 중… 다시 탭하면 전송돼요", toastNoSave: "저장 없이 실행 중이에요 — 데이터가 유지되지 않아요.",
+      toastConflict: "저장되지 않았어요 — 다른 사람이 방금 업데이트했을 수 있어요.",
+      pinSetTitle: "부모 PIN 설정", pinEnterTitle: "부모 PIN 입력",
+      pinCreateHint: "아이가 부모 모드에 들어오지 못하게 해요. 4~6자리 PIN을 정하세요.",
+      pinEnterHint: "계속하려면 부모 PIN을 입력하세요.",
+      pinFieldLbl: "PIN", pinIncorrect: "PIN이 올바르지 않아요 — 다시 시도하세요.", pinTooShort: "4자리 이상으로 입력하세요.",
+      unlock: "잠금 해제", setPin: "PIN 설정",
+      cardSentReview: "확인 요청됨", cardApproved: "✓ 승인됨", cardSentBack: "반려됨",
+      voiceClip: "음성 메시지 · {n}초", languageLabel: "언어",
+      manageKidsBtn: "아이 관리", manageKidsTitle: "아이 관리", manageKidsHint: "이름이나 이모지를 바꾸거나 아이를 추가하세요.",
+      newKidEmojiLbl: "이모지", newKidNameLbl: "이름", addKidBtn: "+ 아이 추가",
+      saveBtn: "저장", removeBtn: "삭제", removeConfirmBtn: "다시 탭하면 삭제돼요",
+      toastKidNameRequired: "이 아이의 이름을 입력하세요.", toastKidAdded: "아이가 추가되었어요!", toastKidRemoved: "삭제되었어요.", toastKidSaved: "저장되었어요.",
+      toastKidsMin: "적어도 한 명은 있어야 해요.",
+      badgesViewHint: "배지를 탭하면 조건을 볼 수 있어요.", badgesNone: "아직 설정된 배지가 없어요.",
+      badgeUnlockedLbl: "획득 완료!", xpToGo: "{n} XP 남음",
+      manageBadgesBtn: "배지 관리", manageBadgesTitle: "배지 관리", manageBadgesHint: "각 배지의 이모지, 이름, 필요한 XP를 설정하세요.",
+      addBadgeBtn: "+ 배지 추가", toastBadgeNameRequired: "이 배지의 이름을 입력하세요.", toastBadgeXpInvalid: "올바른 XP 값을 입력하세요.",
+      toastBadgeAdded: "배지가 추가되었어요!", toastBadgeSaved: "저장되었어요.", toastBadgeUnlocked: "새 배지: {name}!",
+      badgeUnlockedNote: "새 배지: {name}!"
+    }},
+    "zh-CN": { name: "中文（简体）", dir: "ltr", strings: {
+      subtitle: "家庭任务板", kidMode: "儿童模式", parentMode: "家长模式",
+      statXp: "已获XP", statStreak: "连续天数", statBadges: "徽章",
+      questBoard: "任务板", newQuest: "+ 新任务",
+      colAssigned: "待办", colPending: "等待家长确认", colDone: "已完成",
+      emptyAssigned: "还没有任务。", emptyPending: "暂无待确认的任务。", emptyDone: "还没有完成的任务。", emptyChat: "还没有消息，打个招呼吧！👋",
+      markDone: "标记完成", approveBtn: "批准", sendBackBtn: "退回", reassignBtn: "重新开始",
+      waitingFor: "等待 {name}", waitingReview: "等待审核中…",
+      approvedNote: "✓ 已批准 · +{xp} XP", sentBackNote: "已退回 — 请重新完成",
+      familyChat: "家庭聊天", chatPlaceholder: "说点什么…",
+      stamps: ["👍 完成啦！", "❓ 需要帮助", "⏰ 再等5分钟", "🎉 太棒了！", "😴 还没呢"],
+      modalNewQuest: "新任务", fieldTitle: "任务标题", fieldTitlePh: "例如：喂猫",
+      fieldAssign: "分配给", fieldXp: "XP 数值", xpQuick: "10（简单）", xpNormal: "20（普通）", xpBig: "35（较难）",
+      cancel: "取消", createQuest: "创建任务",
+      toastQuestAdded: "任务已添加！", toastGiveTitle: "请先给任务起个标题。",
+      toastNotConnected: "尚未连接，请稍后重试。", toastCouldntAdd: "无法添加该任务，请重试。",
+      toastSentReview: "已提交审核！🎉", toastApproved: "已批准！", toastSentBack: "已退回重新完成。",
+      toastMsgFail: "消息发送失败。", toastRecording: "录音中…再次点击发送", toastNoSave: "未连接，数据不会保存。",
+      toastConflict: "未能保存 — 可能有人刚刚更新了它。",
+      pinSetTitle: "设置家长密码", pinEnterTitle: "输入家长密码",
+      pinCreateHint: "用于防止孩子进入家长模式，请设置一个4-6位的密码。",
+      pinEnterHint: "请输入家长密码以继续。",
+      pinFieldLbl: "密码", pinIncorrect: "密码不正确，请重试。", pinTooShort: "请至少使用4位数字。",
+      unlock: "解锁", setPin: "设置密码",
+      cardSentReview: "已提交审核", cardApproved: "✓ 已批准", cardSentBack: "已退回",
+      voiceClip: "语音消息 · {n}秒", languageLabel: "语言",
+      manageKidsBtn: "管理孩子", manageKidsTitle: "管理孩子", manageKidsHint: "编辑姓名、更改表情符号，或添加新的孩子。",
+      newKidEmojiLbl: "表情符号", newKidNameLbl: "姓名", addKidBtn: "+ 添加孩子",
+      saveBtn: "保存", removeBtn: "移除", removeConfirmBtn: "再次点击以确认移除",
+      toastKidNameRequired: "请给这个孩子起个名字。", toastKidAdded: "已添加孩子！", toastKidRemoved: "已移除。", toastKidSaved: "已保存。",
+      toastKidsMin: "至少需要保留一个孩子。",
+      badgesViewHint: "点击徽章查看解锁条件。", badgesNone: "还没有设置任何徽章。",
+      badgeUnlockedLbl: "已解锁！", xpToGo: "还差 {n} XP",
+      manageBadgesBtn: "管理徽章", manageBadgesTitle: "管理徽章", manageBadgesHint: "为每个徽章设置表情符号、名称和所需的XP。",
+      addBadgeBtn: "+ 添加徽章", toastBadgeNameRequired: "请给这个徽章起个名字。", toastBadgeXpInvalid: "请输入有效的XP数值。",
+      toastBadgeAdded: "徽章已添加！", toastBadgeSaved: "已保存。", toastBadgeUnlocked: "新徽章：{name}！",
+      badgeUnlockedNote: "新徽章：{name}！"
+    }},
+    hi: { name: "हिन्दी", dir: "ltr", strings: {
+      subtitle: "पारिवारिक कार्य बोर्ड", kidMode: "बच्चों का मोड", parentMode: "अभिभावक मोड",
+      statXp: "अर्जित XP", statStreak: "दिनों की लगातार श्रृंखला", statBadges: "बैज",
+      questBoard: "क्वेस्ट बोर्ड", newQuest: "+ नई क्वेस्ट",
+      colAssigned: "करना है", colPending: "बड़ों की जांच का इंतज़ार", colDone: "पूरा हुआ",
+      emptyAssigned: "अभी कोई क्वेस्ट नहीं है।", emptyPending: "कुछ भी इंतज़ार में नहीं है।", emptyDone: "अभी तक कुछ पूरा नहीं हुआ।", emptyChat: "अभी कोई संदेश नहीं है। नमस्ते कहें! 👋",
+      markDone: "पूरा हुआ बताएं", approveBtn: "स्वीकृत करें", sendBackBtn: "वापस भेजें", reassignBtn: "फिर से करें",
+      waitingFor: "{name} की बारी है", waitingReview: "समीक्षा का इंतज़ार…",
+      approvedNote: "✓ स्वीकृत · +{xp} XP", sentBackNote: "वापस भेजा गया — फिर से कोशिश करें",
+      familyChat: "पारिवारिक चैट", chatPlaceholder: "कुछ लिखें…",
+      stamps: ["👍 हो गया!", "❓ मदद चाहिए", "⏰ 5 मिनट और", "🎉 वाह!", "😴 अभी नहीं"],
+      modalNewQuest: "नई क्वेस्ट", fieldTitle: "काम का नाम", fieldTitlePh: "उदा. बिल्ली को खाना देना",
+      fieldAssign: "किसके लिए", fieldXp: "XP मान", xpQuick: "10 (आसान)", xpNormal: "20 (सामान्य)", xpBig: "35 (बड़ा)",
+      cancel: "रद्द करें", createQuest: "क्वेस्ट बनाएं",
+      toastQuestAdded: "क्वेस्ट जोड़ी गई!", toastGiveTitle: "पहले क्वेस्ट को एक नाम दें।",
+      toastNotConnected: "अभी कनेक्ट नहीं है — थोड़ी देर में फिर कोशिश करें।", toastCouldntAdd: "क्वेस्ट नहीं जुड़ सकी — फिर कोशिश करें।",
+      toastSentReview: "समीक्षा के लिए भेजा गया! 🎉", toastApproved: "स्वीकृत!", toastSentBack: "फिर से करने के लिए वापस भेजा गया।",
+      toastMsgFail: "संदेश नहीं भेजा जा सका।", toastRecording: "रिकॉर्ड हो रहा है… भेजने के लिए फिर टैप करें", toastNoSave: "बिना सेव किए चल रहा है — डेटा सुरक्षित नहीं रहेगा।",
+      toastConflict: "यह सेव नहीं हुआ — हो सकता है किसी ने अभी इसे अपडेट किया हो।",
+      pinSetTitle: "अभिभावक PIN सेट करें", pinEnterTitle: "अभिभावक PIN डालें",
+      pinCreateHint: "इससे बच्चे अभिभावक मोड में नहीं जा पाएंगे। 4–6 अंकों का PIN चुनें।",
+      pinEnterHint: "जारी रखने के लिए अभिभावक PIN डालें।",
+      pinFieldLbl: "PIN", pinIncorrect: "यह PIN सही नहीं है — फिर कोशिश करें।", pinTooShort: "कम से कम 4 अंकों का उपयोग करें।",
+      unlock: "अनलॉक करें", setPin: "PIN सेट करें",
+      cardSentReview: "समीक्षा हेतु भेजा गया", cardApproved: "✓ स्वीकृत", cardSentBack: "वापस भेजा गया",
+      voiceClip: "वॉइस क्लिप · {n} सेकंड", languageLabel: "भाषा",
+      manageKidsBtn: "बच्चों को प्रबंधित करें", manageKidsTitle: "बच्चों को प्रबंधित करें", manageKidsHint: "नाम बदलें, इमोजी बदलें, या एक और बच्चा जोड़ें।",
+      newKidEmojiLbl: "इमोजी", newKidNameLbl: "नाम", addKidBtn: "+ बच्चा जोड़ें",
+      saveBtn: "सेव करें", removeBtn: "हटाएं", removeConfirmBtn: "हटाने के लिए फिर टैप करें",
+      toastKidNameRequired: "इस बच्चे का नाम डालें।", toastKidAdded: "बच्चा जोड़ा गया!", toastKidRemoved: "हटाया गया।", toastKidSaved: "सेव हो गया।",
+      toastKidsMin: "कम से कम एक बच्चा होना चाहिए।",
+      badgesViewHint: "शर्तें देखने के लिए बैज पर टैप करें।", badgesNone: "अभी तक कोई बैज सेट नहीं है।",
+      badgeUnlockedLbl: "अनलॉक हो गया!", xpToGo: "{n} XP और चाहिए",
+      manageBadgesBtn: "बैज प्रबंधित करें", manageBadgesTitle: "बैज प्रबंधित करें", manageBadgesHint: "हर बैज के लिए इमोजी, नाम और ज़रूरी XP सेट करें।",
+      addBadgeBtn: "+ बैज जोड़ें", toastBadgeNameRequired: "इस बैज का नाम डालें।", toastBadgeXpInvalid: "सही XP मान डालें।",
+      toastBadgeAdded: "बैज जोड़ा गया!", toastBadgeSaved: "सेव हो गया।", toastBadgeUnlocked: "नया बैज: {name}!",
+      badgeUnlockedNote: "नया बैज: {name}!"
+    }},
+    de: { name: "Deutsch", dir: "ltr", strings: {
+      subtitle: "Familien-Aufgabenboard", kidMode: "Kindermodus", parentMode: "Elternmodus",
+      statXp: "Verdiente XP", statStreak: "Tage in Folge", statBadges: "Abzeichen",
+      questBoard: "Quest-Board", newQuest: "+ Neue Quest",
+      colAssigned: "Zu erledigen", colPending: "Wartet auf einen Erwachsenen", colDone: "Erledigt",
+      emptyAssigned: "Noch keine Quests.", emptyPending: "Nichts wartet.", emptyDone: "Noch nichts erledigt.", emptyChat: "Noch keine Nachrichten. Sag Hallo! 👋",
+      markDone: "Erledigt", approveBtn: "Genehmigen", sendBackBtn: "Zurückschicken", reassignBtn: "Erneut versuchen",
+      waitingFor: "Warten auf {name}", waitingReview: "Wartet auf Prüfung…",
+      approvedNote: "✓ Genehmigt · +{xp} XP", sentBackNote: "Zurückgeschickt — nochmal versuchen",
+      familyChat: "Familienchat", chatPlaceholder: "Schreib etwas…",
+      stamps: ["👍 Fertig!", "❓ Brauche Hilfe", "⏰ Noch 5 Min", "🎉 Juhu!", "😴 Noch nicht"],
+      modalNewQuest: "Neue Quest", fieldTitle: "Aufgabentitel", fieldTitlePh: "z. B. Katze füttern",
+      fieldAssign: "Zuweisen an", fieldXp: "XP-Wert", xpQuick: "10 (schnell)", xpNormal: "20 (normal)", xpBig: "35 (groß)",
+      cancel: "Abbrechen", createQuest: "Quest erstellen",
+      toastQuestAdded: "Quest hinzugefügt!", toastGiveTitle: "Gib der Quest zuerst einen Titel.",
+      toastNotConnected: "Noch nicht verbunden — versuch es gleich noch einmal.", toastCouldntAdd: "Quest konnte nicht hinzugefügt werden — versuch es erneut.",
+      toastSentReview: "Zur Prüfung gesendet! 🎉", toastApproved: "Genehmigt!", toastSentBack: "Zur Wiederholung zurückgeschickt.",
+      toastMsgFail: "Nachricht wurde nicht gesendet.", toastRecording: "Aufnahme läuft … zum Senden erneut tippen", toastNoSave: "Läuft ohne Speichern — Daten bleiben nicht erhalten.",
+      toastConflict: "Das wurde nicht gespeichert — jemand hat es vielleicht gerade aktualisiert.",
+      pinSetTitle: "Eltern-PIN festlegen", pinEnterTitle: "Eltern-PIN eingeben",
+      pinCreateHint: "So bleiben Kinder aus dem Elternmodus. Wähle eine 4–6-stellige PIN.",
+      pinEnterHint: "Gib die Eltern-PIN ein, um fortzufahren.",
+      pinFieldLbl: "PIN", pinIncorrect: "Diese PIN ist falsch — versuch es erneut.", pinTooShort: "Verwende mindestens 4 Ziffern.",
+      unlock: "Entsperren", setPin: "PIN festlegen",
+      cardSentReview: "Zur Prüfung gesendet", cardApproved: "✓ Genehmigt", cardSentBack: "Zurückgeschickt",
+      voiceClip: "Sprachnachricht · {n}s", languageLabel: "Sprache",
+      manageKidsBtn: "Kinder verwalten", manageKidsTitle: "Kinder verwalten", manageKidsHint: "Namen bearbeiten, Emoji ändern oder ein weiteres Kind hinzufügen.",
+      newKidEmojiLbl: "Emoji", newKidNameLbl: "Name", addKidBtn: "+ Kind hinzufügen",
+      saveBtn: "Speichern", removeBtn: "Entfernen", removeConfirmBtn: "Zum Entfernen erneut tippen",
+      toastKidNameRequired: "Gib diesem Kind einen Namen.", toastKidAdded: "Kind hinzugefügt!", toastKidRemoved: "Entfernt.", toastKidSaved: "Gespeichert.",
+      toastKidsMin: "Mindestens ein Kind muss übrig bleiben.",
+      badgesViewHint: "Tippe auf ein Abzeichen, um zu sehen, was dafür nötig ist.", badgesNone: "Noch keine Abzeichen eingerichtet.",
+      badgeUnlockedLbl: "Freigeschaltet!", xpToGo: "Noch {n} XP",
+      manageBadgesBtn: "Abzeichen verwalten", manageBadgesTitle: "Abzeichen verwalten", manageBadgesHint: "Lege Emoji, Namen und benötigte XP für jedes Abzeichen fest.",
+      addBadgeBtn: "+ Abzeichen hinzufügen", toastBadgeNameRequired: "Gib diesem Abzeichen einen Namen.", toastBadgeXpInvalid: "Gib einen gültigen XP-Wert ein.",
+      toastBadgeAdded: "Abzeichen hinzugefügt!", toastBadgeSaved: "Gespeichert.", toastBadgeUnlocked: "Neues Abzeichen: {name}!",
+      badgeUnlockedNote: "Neues Abzeichen: {name}!"
+    }},
+    it: { name: "Italiano", dir: "ltr", strings: {
+      subtitle: "Bacheca dei compiti di famiglia", kidMode: "Modalità bambino", parentMode: "Modalità genitore",
+      statXp: "XP guadagnati", statStreak: "giorni di serie", statBadges: "distintivi",
+      questBoard: "Bacheca delle missioni", newQuest: "+ Nuova missione",
+      colAssigned: "Da fare", colPending: "In attesa di un adulto", colDone: "Fatto",
+      emptyAssigned: "Ancora nessuna missione.", emptyPending: "Niente in attesa.", emptyDone: "Ancora niente completato.", emptyChat: "Ancora nessun messaggio. Saluta! 👋",
+      markDone: "Segna come fatto", approveBtn: "Approva", sendBackBtn: "Rimanda indietro", reassignBtn: "Riprova",
+      waitingFor: "In attesa di {name}", waitingReview: "In attesa di revisione…",
+      approvedNote: "✓ Approvato · +{xp} XP", sentBackNote: "Rimandato indietro — riprova",
+      familyChat: "Chat di famiglia", chatPlaceholder: "Scrivi qualcosa…",
+      stamps: ["👍 Fatto!", "❓ Serve aiuto", "⏰ Altri 5 min", "🎉 Evviva!", "😴 Non ancora"],
+      modalNewQuest: "Nuova missione", fieldTitle: "Titolo del compito", fieldTitlePh: "es. Dare da mangiare al gatto",
+      fieldAssign: "Assegna a", fieldXp: "Valore XP", xpQuick: "10 (rapido)", xpNormal: "20 (normale)", xpBig: "35 (grande)",
+      cancel: "Annulla", createQuest: "Crea missione",
+      toastQuestAdded: "Missione aggiunta!", toastGiveTitle: "Dai prima un titolo alla missione.",
+      toastNotConnected: "Non ancora connesso — riprova tra un momento.", toastCouldntAdd: "Impossibile aggiungere la missione — riprova.",
+      toastSentReview: "Inviato per la revisione! 🎉", toastApproved: "Approvato!", toastSentBack: "Rimandato indietro per riprovare.",
+      toastMsgFail: "Messaggio non inviato.", toastRecording: "Registrazione… tocca di nuovo per inviare", toastNoSave: "In esecuzione senza salvataggio — i dati non verranno conservati.",
+      toastConflict: "Non è stato salvato — qualcuno potrebbe averlo appena aggiornato.",
+      pinSetTitle: "Imposta un PIN genitore", pinEnterTitle: "Inserisci il PIN genitore",
+      pinCreateHint: "Serve a impedire ai bambini di entrare in modalità genitore. Scegli un PIN di 4–6 cifre.",
+      pinEnterHint: "Inserisci il PIN genitore per continuare.",
+      pinFieldLbl: "PIN", pinIncorrect: "PIN errato — riprova.", pinTooShort: "Usa almeno 4 cifre.",
+      unlock: "Sblocca", setPin: "Imposta PIN",
+      cardSentReview: "Inviato per revisione", cardApproved: "✓ Approvato", cardSentBack: "Rimandato indietro",
+      voiceClip: "Nota vocale · {n}s", languageLabel: "Lingua",
+      manageKidsBtn: "Gestisci bambini", manageKidsTitle: "Gestisci bambini", manageKidsHint: "Modifica i nomi, cambia l'emoji o aggiungi un altro bambino.",
+      newKidEmojiLbl: "Emoji", newKidNameLbl: "Nome", addKidBtn: "+ Aggiungi bambino",
+      saveBtn: "Salva", removeBtn: "Rimuovi", removeConfirmBtn: "Tocca di nuovo per rimuovere",
+      toastKidNameRequired: "Dai un nome a questo bambino.", toastKidAdded: "Bambino aggiunto!", toastKidRemoved: "Rimosso.", toastKidSaved: "Salvato.",
+      toastKidsMin: "Deve rimanere almeno un bambino.",
+      badgesViewHint: "Tocca un distintivo per vedere cosa serve.", badgesNone: "Nessun distintivo impostato ancora.",
+      badgeUnlockedLbl: "Sbloccato!", xpToGo: "Mancano {n} XP",
+      manageBadgesBtn: "Gestisci distintivi", manageBadgesTitle: "Gestisci distintivi", manageBadgesHint: "Imposta emoji, nome e XP necessari per ogni distintivo.",
+      addBadgeBtn: "+ Aggiungi distintivo", toastBadgeNameRequired: "Dai un nome a questo distintivo.", toastBadgeXpInvalid: "Inserisci un valore XP valido.",
+      toastBadgeAdded: "Distintivo aggiunto!", toastBadgeSaved: "Salvato.", toastBadgeUnlocked: "Nuovo distintivo: {name}!",
+      badgeUnlockedNote: "Nuovo distintivo: {name}!"
+    }},
+    pt: { name: "Português", dir: "ltr", strings: {
+      subtitle: "Quadro de tarefas da família", kidMode: "Modo criança", parentMode: "Modo responsável",
+      statXp: "XP conquistado", statStreak: "dias seguidos", statBadges: "emblemas",
+      questBoard: "Quadro de missões", newQuest: "+ Nova missão",
+      colAssigned: "A fazer", colPending: "Aguardando um adulto", colDone: "Concluído",
+      emptyAssigned: "Ainda não há missões.", emptyPending: "Nada aguardando.", emptyDone: "Nada concluído ainda.", emptyChat: "Ainda sem mensagens. Diga oi! 👋",
+      markDone: "Marcar como feito", approveBtn: "Aprovar", sendBackBtn: "Devolver", reassignBtn: "Tentar de novo",
+      waitingFor: "Esperando por {name}", waitingReview: "Aguardando revisão…",
+      approvedNote: "✓ Aprovado · +{xp} XP", sentBackNote: "Devolvido — tente de novo",
+      familyChat: "Chat da família", chatPlaceholder: "Escreva algo…",
+      stamps: ["👍 Feito!", "❓ Preciso de ajuda", "⏰ Mais 5 min", "🎉 Uhu!", "😴 Ainda não"],
+      modalNewQuest: "Nova missão", fieldTitle: "Título da tarefa", fieldTitlePh: "ex.: Alimentar o gato",
+      fieldAssign: "Atribuir a", fieldXp: "Valor em XP", xpQuick: "10 (rápida)", xpNormal: "20 (normal)", xpBig: "35 (grande)",
+      cancel: "Cancelar", createQuest: "Criar missão",
+      toastQuestAdded: "Missão adicionada!", toastGiveTitle: "Dê um título à missão primeiro.",
+      toastNotConnected: "Ainda não conectado — tente novamente em instantes.", toastCouldntAdd: "Não foi possível adicionar a missão — tente novamente.",
+      toastSentReview: "Enviado para revisão! 🎉", toastApproved: "Aprovado!", toastSentBack: "Devolvido para tentar de novo.",
+      toastMsgFail: "A mensagem não foi enviada.", toastRecording: "Gravando… toque novamente para enviar", toastNoSave: "Funcionando sem salvar — os dados não serão mantidos.",
+      toastConflict: "Isso não foi salvo — alguém pode ter acabado de atualizar.",
+      pinSetTitle: "Definir um PIN de responsável", pinEnterTitle: "Digite o PIN de responsável",
+      pinCreateHint: "Isso impede que as crianças entrem no modo responsável. Escolha um PIN de 4 a 6 dígitos.",
+      pinEnterHint: "Digite o PIN de responsável para continuar.",
+      pinFieldLbl: "PIN", pinIncorrect: "PIN incorreto — tente novamente.", pinTooShort: "Use pelo menos 4 dígitos.",
+      unlock: "Desbloquear", setPin: "Definir PIN",
+      cardSentReview: "Enviado para revisão", cardApproved: "✓ Aprovado", cardSentBack: "Devolvido",
+      voiceClip: "Nota de voz · {n}s", languageLabel: "Idioma",
+      manageKidsBtn: "Gerenciar crianças", manageKidsTitle: "Gerenciar crianças", manageKidsHint: "Edite nomes, mude o emoji ou adicione outra criança.",
+      newKidEmojiLbl: "Emoji", newKidNameLbl: "Nome", addKidBtn: "+ Adicionar criança",
+      saveBtn: "Salvar", removeBtn: "Remover", removeConfirmBtn: "Toque de novo para remover",
+      toastKidNameRequired: "Dê um nome a essa criança.", toastKidAdded: "Criança adicionada!", toastKidRemoved: "Removida.", toastKidSaved: "Salvo.",
+      toastKidsMin: "É preciso manter pelo menos uma criança.",
+      badgesViewHint: "Toque em um emblema para ver o que é preciso.", badgesNone: "Ainda não há emblemas configurados.",
+      badgeUnlockedLbl: "Desbloqueado!", xpToGo: "Faltam {n} XP",
+      manageBadgesBtn: "Gerenciar emblemas", manageBadgesTitle: "Gerenciar emblemas", manageBadgesHint: "Defina o emoji, o nome e o XP necessário para cada emblema.",
+      addBadgeBtn: "+ Adicionar emblema", toastBadgeNameRequired: "Dê um nome a esse emblema.", toastBadgeXpInvalid: "Digite um valor de XP válido.",
+      toastBadgeAdded: "Emblema adicionado!", toastBadgeSaved: "Salvo.", toastBadgeUnlocked: "Novo emblema: {name}!",
+      badgeUnlockedNote: "Novo emblema: {name}!"
+    }}
+  };
+  const LANG_ORDER = ["en", "ja", "fr", "es", "ko", "zh-CN", "hi", "de", "it", "pt"];
+
+  let lang = "en";
+  try {
+    const saved = localStorage.getItem("questlog_lang");
+    if (saved && LANGS[saved]) lang = saved;
+  } catch (e) { /* storage unavailable, fall back to default */ }
+
+  function t(key, vars) {
+    const dict = (LANGS[lang] && LANGS[lang].strings) || LANGS.en.strings;
+    let str = dict[key] !== undefined ? dict[key] : (LANGS.en.strings[key] || key);
+    if (vars) Object.keys(vars).forEach(k => { str = str.replace("{" + k + "}", vars[k]); });
+    return str;
+  }
+  function tStamps() {
+    const dict = (LANGS[lang] && LANGS[lang].strings) || LANGS.en.strings;
+    return dict.stamps || LANGS.en.strings.stamps;
+  }
+
+  // ================= constants =================
+  const DEFAULT_KIDS = [
+    { id: "kid_yuki", name: "Yuki", emoji: "🦊", order: 0 },
+    { id: "kid_sora", name: "Sora", emoji: "🐼", order: 1 }
+  ];
+  const DEFAULT_BADGES = [
+    { name: "Starter", emoji: "🌱", xp: 50 },
+    { name: "Bronze", emoji: "🥉", xp: 150 },
+    { name: "Silver", emoji: "🥈", xp: 300 },
+    { name: "Gold", emoji: "🥇", xp: 500 },
+    { name: "Champion", emoji: "🏆", xp: 800 }
+  ];
+
+  let db = null;
+  let role = "child";
+  let activeKid = null;
+  let tasksCache = {};
+  let messagesCache = {};
+  let statsCache = {};
+  let kidsCache = {};         // live from db.collection("kids")
+  let badgesCache = {};       // live from db.collection("badges")
+  let removePendingId = null; // two-tap confirm state for removing a kid
+  let removePendingBadgeId = null;
+  let parentPin = null;       // stored PIN from settings doc (null = not set yet)
+  let parentUnlocked = false; // unlocked for this session only
+  let pinMode = "enter";      // "enter" | "set"
+
+  function kidsList() {
+    return Object.entries(kidsCache)
+      .map(([id, k]) => ({ id, ...k }))
+      .sort((a, b) => (a.order || 0) - (b.order || 0) || (a.createdAt || 0) - (b.createdAt || 0));
+  }
+
+  function badgesList() {
+    return Object.entries(badgesCache)
+      .map(([id, b]) => ({ id, ...b }))
+      .sort((a, b) => (a.xp || 0) - (b.xp || 0));
+  }
+
+  // ================= helpers =================
+  function toast(msg) {
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toast._h);
+    toast._h = setTimeout(() => el.classList.remove("show"), 1800);
+  }
+  function kidById(id) {
+    if (kidsCache[id]) return { id, ...kidsCache[id] };
+    const list = kidsList();
+    return list[0] || { id: id || "kid_unknown", name: "?", emoji: "🧒" };
+  }
+  function escapeHtml(s) {
+    return (s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function timeStr(ts) {
+    try { return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
+    catch (e) { return ""; }
+  }
+
+  // ================= language switching =================
+  function populateLangSelect() {
+    const sel = document.getElementById("langSelect");
+    sel.innerHTML = LANG_ORDER.map(code => `<option value="${code}">${LANGS[code].name}</option>`).join("");
+    sel.value = lang;
+  }
+  function setLang(code) {
+    if (!LANGS[code]) return;
+    lang = code;
+    try { localStorage.setItem("questlog_lang", lang); } catch (e) { /* ignore */ }
+    document.documentElement.lang = code === "zh-CN" ? "zh-CN" : code;
+    applyStaticText();
+    renderKidPicker();
+    renderTasks();
+    renderStats();
+    renderChat();
+    renderStampRow();
+  }
+
+  function applyStaticText() {
+    document.getElementById("brandSubtitle").textContent = t("subtitle");
+    document.getElementById("roleChildBtn").textContent = t("kidMode");
+    document.getElementById("roleParentBtn").textContent = t("parentMode");
+    document.getElementById("statXpLbl").textContent = t("statXp");
+    document.getElementById("statStreakLbl").textContent = t("statStreak");
+    document.getElementById("statBadgesLbl").textContent = t("statBadges");
+    document.getElementById("questBoardHeading").textContent = t("questBoard");
+    document.getElementById("addTaskBtn").textContent = t("newQuest");
+    document.getElementById("colAssignedLbl").textContent = t("colAssigned");
+    document.getElementById("colPendingLbl").textContent = t("colPending");
+    document.getElementById("colDoneLbl").textContent = t("colDone");
+    document.getElementById("familyChatHeading").textContent = t("familyChat");
+    document.getElementById("chatInput").placeholder = t("chatPlaceholder");
+    document.getElementById("modalNewQuestTitle").textContent = t("modalNewQuest");
+    document.getElementById("fieldTitleLbl").textContent = t("fieldTitle");
+    document.getElementById("newTaskTitle").placeholder = t("fieldTitlePh");
+    document.getElementById("fieldAssignLbl").textContent = t("fieldAssign");
+    document.getElementById("fieldXpLbl").textContent = t("fieldXp");
+    document.getElementById("xpQuickOpt").textContent = t("xpQuick");
+    document.getElementById("xpNormalOpt").textContent = t("xpNormal");
+    document.getElementById("xpBigOpt").textContent = t("xpBig");
+    document.getElementById("cancelTaskBtn").textContent = t("cancel");
+    document.getElementById("createTaskBtn").textContent = t("createQuest");
+    document.getElementById("pinFieldLbl").textContent = t("pinFieldLbl");
+    document.getElementById("pinCancelBtn").textContent = t("cancel");
+    document.getElementById("langSelect").setAttribute("aria-label", t("languageLabel"));
+    document.getElementById("colDoneLbl").textContent = t("colDone");
+    document.getElementById("manageKidsBtn").textContent = t("manageKidsBtn");
+    document.getElementById("manageKidsTitle").textContent = t("manageKidsTitle");
+    document.getElementById("manageKidsHint").textContent = t("manageKidsHint");
+    document.getElementById("newKidEmojiLbl").textContent = t("newKidEmojiLbl");
+    document.getElementById("newKidNameLbl").textContent = t("newKidNameLbl");
+    document.getElementById("addKidBtn").textContent = t("addKidBtn");
+    document.getElementById("closeKidsModalBtn").textContent = t("cancel");
+    document.getElementById("badgesViewTitle").textContent = t("statBadges");
+    document.getElementById("badgesViewHint").textContent = t("badgesViewHint");
+    document.getElementById("closeBadgesViewBtn").textContent = t("cancel");
+    document.getElementById("manageBadgesBtn").textContent = t("manageBadgesBtn");
+    document.getElementById("manageBadgesTitle").textContent = t("manageBadgesTitle");
+    document.getElementById("manageBadgesHint").textContent = t("manageBadgesHint");
+    document.getElementById("newBadgeEmojiLbl").textContent = t("newKidEmojiLbl");
+    document.getElementById("newBadgeNameLbl").textContent = t("newKidNameLbl");
+    document.getElementById("newBadgeXpLbl").textContent = t("fieldXp");
+    document.getElementById("addBadgeBtn").textContent = t("addBadgeBtn");
+    document.getElementById("closeManageBadgesBtn").textContent = t("cancel");
+    const kidSel = document.getElementById("newTaskKid");
+    if (kidSel && kidSel.options.length) {
+      const list = kidsList();
+      Array.from(kidSel.options).forEach((opt, i) => { if (list[i]) opt.textContent = `${list[i].emoji} ${list[i].name}`; });
+    }
+  }
+
+  // ================= role & kid picker =================
+  function setRole(r) {
+    if (r === "parent" && !parentUnlocked) {
+      openPinModal("enter");
+      return;
+    }
+    role = r;
+    document.getElementById("roleChildBtn").classList.toggle("active", r === "child");
+    document.getElementById("roleParentBtn").classList.toggle("active", r === "parent");
+    document.getElementById("addTaskBtn").style.display = r === "parent" ? "inline-block" : "none";
+    document.getElementById("manageKidsBtn").style.display = r === "parent" ? "inline-block" : "none";
+    document.getElementById("manageBadgesBtn").style.display = r === "parent" ? "inline-block" : "none";
+    document.getElementById("lockBtn").style.display = r === "parent" ? "flex" : "none";
+    if (r === "child") parentUnlocked = false;
+    renderKidPicker();
+    renderTasks();
+    renderStats();
+    renderChat();
+  }
+
+  function lockParentMode() {
+    parentUnlocked = false;
+    setRole("child");
+    toast(t("unlock") === "Unlock" ? "Locked" : t("unlock"));
+  }
+
+  function renderKidPicker() {
+    const el = document.getElementById("kidPicker");
+    el.innerHTML = "";
+    const list = kidsList();
+    if (!list.length) return;
+    if (!activeKid || !kidsCache[activeKid]) activeKid = list[0].id;
+    list.forEach(k => {
+      if (role === "child" && k.id !== activeKid) return;
+      const chip = document.createElement("div");
+      chip.className = "kid-chip" + (k.id === activeKid ? " active" : "");
+      chip.tabIndex = 0;
+      chip.innerHTML = `<span class="kid-avatar">${k.emoji}</span> ${escapeHtml(k.name)}`;
+      chip.onclick = () => { activeKid = k.id; renderKidPicker(); renderTasks(); renderStats(); };
+      el.appendChild(chip);
+    });
+  }
+
+  // ================= stats & badges =================
+  function unlockedBadges(xp) { return badgesList().filter(b => xp >= (b.xp || 0)); }
+
+  function renderStats() {
+    const s = statsCache[activeKid] || { xp: 0, streak: 0 };
+    document.getElementById("statXp").textContent = s.xp || 0;
+    document.getElementById("statStreak").textContent = s.streak || 0;
+    const total = badgesList().length;
+    document.getElementById("statBadges").textContent = total ? `${unlockedBadges(s.xp || 0).length}/${total}` : "0";
+    renderBadgeStrip(s.xp || 0);
+  }
+
+  function renderBadgeStrip(xp) {
+    const wrap = document.getElementById("badgeStrip");
+    const list = badgesList();
+    wrap.innerHTML = "";
+    if (!list.length) return;
+    list.forEach(b => {
+      const chip = document.createElement("div");
+      const isUnlocked = xp >= (b.xp || 0);
+      chip.className = "badge-chip" + (isUnlocked ? "" : " locked");
+      chip.textContent = b.emoji;
+      chip.title = isUnlocked ? b.name : `${b.name} — ${t("xpToGo", { n: Math.max(0, (b.xp || 0) - xp) })}`;
+      chip.onclick = openBadgesViewModal;
+      wrap.appendChild(chip);
+    });
+  }
+
+  async function bumpStats(kidId, xpDelta) {
+    if (!db) return;
+    try {
+      const docId = "stats_" + kidId;
+      const existing = statsCache[kidId] || { xp: 0, streak: 0 };
+      const oldXp = existing.xp || 0;
+      const newXp = Math.max(0, oldXp + xpDelta);
+      await db.doc("stats/" + docId).set({ xp: newXp, streak: existing.streak || 0, updatedAt: Date.now() });
+      if (xpDelta > 0) {
+        const newlyUnlocked = badgesList().filter(b => oldXp < (b.xp || 0) && newXp >= (b.xp || 0));
+        for (const b of newlyUnlocked) { await celebrateBadge(kidId, b); }
+      }
+    } catch (e) { console.error("stats write failed", e); }
+  }
+
+  async function celebrateBadge(kidId, badge) {
+    toast(badge.emoji + " " + t("toastBadgeUnlocked", { name: badge.name }));
+    if (!db) return;
+    try {
+      await db.collection("messages").add({
+        type: "badge_unlock", badgeName: badge.name, badgeEmoji: badge.emoji,
+        sender: kidById(kidId).name, senderRole: "child", ts: Date.now()
+      });
+    } catch (e) { console.error("badge card post failed", e); }
+  }
+
+  // ================= tasks =================
+  function tasksForKid(kidId) {
+    return Object.entries(tasksCache).map(([id, tk]) => ({ id, ...tk }))
+      .filter(tk => tk.assignedTo === kidId)
+      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+  }
+
+  function renderTasks() {
+    if (!activeKid) { return; }
+    const list = tasksForKid(activeKid);
+    const cols = { assigned: [], pending: [], done: [] };
+    list.forEach(tk => {
+      if (tk.status === "approved" || tk.status === "rejected") cols.done.push(tk);
+      else if (tk.status === "pending") cols.pending.push(tk);
+      else cols.assigned.push(tk);
+    });
+    const emptyKeys = { assigned: "emptyAssigned", pending: "emptyPending", done: "emptyDone" };
+    Object.keys(cols).forEach(key => {
+      const container = document.getElementById("col-" + key);
+      document.getElementById("cnt-" + key).textContent = cols[key].length;
+      container.innerHTML = "";
+      if (cols[key].length === 0) {
+        container.innerHTML = `<div class="empty-col">${escapeHtml(t(emptyKeys[key]))}</div>`;
+        return;
+      }
+      cols[key].forEach(tk => container.appendChild(renderTaskCard(tk)));
+    });
+  }
+
+  function renderTaskCard(tk) {
+    const card = document.createElement("div");
+    card.className = "task-card";
+    const kid = kidById(tk.assignedTo);
+    let actionsHtml = "", noteHtml = "";
+
+    if (tk.status === "assigned" && role === "child") {
+      actionsHtml = `<div class="task-actions"><button class="btn btn-done" data-act="submit" data-id="${tk.id}">${escapeHtml(t("markDone"))}</button></div>`;
+    } else if (tk.status === "assigned" && role === "parent") {
+      noteHtml = `<div class="status-note">${escapeHtml(t("waitingFor", { name: kid.name }))}</div>`;
+    } else if (tk.status === "pending" && role === "parent") {
+      actionsHtml = `<div class="task-actions">
+          <button class="btn btn-approve" data-act="approve" data-id="${tk.id}">${escapeHtml(t("approveBtn"))}</button>
+          <button class="btn btn-reject" data-act="reject" data-id="${tk.id}">${escapeHtml(t("sendBackBtn"))}</button>
+        </div>`;
+    } else if (tk.status === "pending" && role === "child") {
+      noteHtml = `<div class="status-note">${escapeHtml(t("waitingReview"))}</div>`;
+    } else if (tk.status === "approved") {
+      noteHtml = `<div class="status-note approved">${escapeHtml(t("approvedNote", { xp: tk.xp }))}</div>`;
+    } else if (tk.status === "rejected") {
+      noteHtml = `<div class="status-note rejected">${escapeHtml(t("sentBackNote"))}</div>
+        <div class="task-actions"><button class="btn btn-ghost" data-act="reassign" data-id="${tk.id}">${escapeHtml(t("reassignBtn"))}</button></div>`;
+    }
+
+    card.innerHTML = `
+      <div class="task-top">
+        <div class="task-title">${escapeHtml(tk.title)}</div>
+        <div class="xp-pill">${tk.xp} XP</div>
+      </div>
+      <div class="task-meta">${escapeHtml(kid.name)}</div>
+      ${noteHtml}
+      ${actionsHtml}
+    `;
+    card.querySelectorAll("button[data-act]").forEach(btn => {
+      btn.addEventListener("click", () => handleTaskAction(btn.dataset.act, btn.dataset.id));
+    });
+    return card;
+  }
+
+  async function handleTaskAction(act, taskId) {
+    if (!db) { toast(t("toastNotConnected")); return; }
+    const tk = tasksCache[taskId];
+    if (!tk) return;
+    try {
+      if (act === "submit") {
+        await db.doc("tasks/" + taskId).update({ status: "pending", submittedAt: Date.now() });
+        await postSystemCard(taskId, "submitted");
+        toast(t("toastSentReview"));
+      } else if (act === "approve") {
+        await db.doc("tasks/" + taskId).update({ status: "approved", reviewedAt: Date.now() });
+        await bumpStats(tk.assignedTo, tk.xp || 0);
+        await postSystemCard(taskId, "approved");
+        toast(t("toastApproved"));
+      } else if (act === "reject") {
+        await db.doc("tasks/" + taskId).update({ status: "rejected", reviewedAt: Date.now() });
+        await postSystemCard(taskId, "rejected");
+        toast(t("toastSentBack"));
+      } else if (act === "reassign") {
+        await db.doc("tasks/" + taskId).update({ status: "assigned" });
+      }
+    } catch (e) {
+      console.error(e);
+      toast(t("toastConflict"));
+    }
+  }
+
+  async function postSystemCard(taskId, kind) {
+    if (!db) return;
+    const tk = tasksCache[taskId];
+    if (!tk) return;
+    try {
+      await db.collection("messages").add({
+        type: "task_card", taskId: taskId, taskTitle: tk.title,
+        status: kind === "submitted" ? "pending" : kind,
+        sender: role === "parent" ? t("parentMode") : kidById(tk.assignedTo).name,
+        senderRole: role, ts: Date.now()
+      });
+    } catch (e) { console.error("card post failed", e); }
+  }
+
+  // ================= add task modal =================
+  function openTaskModal() {
+    const sel = document.getElementById("newTaskKid");
+    sel.innerHTML = kidsList().map(k => `<option value="${k.id}">${k.emoji} ${escapeHtml(k.name)}</option>`).join("");
+    document.getElementById("newTaskTitle").value = "";
+    document.getElementById("taskModalBg").classList.add("open");
+  }
+  function closeTaskModal() { document.getElementById("taskModalBg").classList.remove("open"); }
+
+  async function createTask() {
+    const title = document.getElementById("newTaskTitle").value.trim();
+    const kid = document.getElementById("newTaskKid").value;
+    const xp = parseInt(document.getElementById("newTaskXp").value, 10);
+    if (!title) { toast(t("toastGiveTitle")); return; }
+    if (!db) { toast(t("toastNotConnected")); return; }
+    try {
+      await db.collection("tasks").add({ title, assignedTo: kid, xp, status: "assigned", createdAt: Date.now() });
+      closeTaskModal();
+      toast(t("toastQuestAdded"));
+    } catch (e) {
+      console.error(e);
+      toast(t("toastCouldntAdd"));
+    }
+  }
+
+  // ================= badges view modal (read-only, both roles) =================
+  function openBadgesViewModal() {
+    renderBadgesViewList();
+    document.getElementById("badgesViewModalBg").classList.add("open");
+  }
+  function closeBadgesViewModal() { document.getElementById("badgesViewModalBg").classList.remove("open"); }
+
+  function renderBadgesViewList() {
+    const wrap = document.getElementById("badgesViewList");
+    wrap.innerHTML = "";
+    const list = badgesList();
+    if (!list.length) {
+      wrap.innerHTML = `<div class="empty-col" style="color:#6c6488;">${escapeHtml(t("badgesNone"))}</div>`;
+      return;
+    }
+    const xp = (statsCache[activeKid] || {}).xp || 0;
+    list.forEach(b => {
+      const isUnlocked = xp >= (b.xp || 0);
+      const row = document.createElement("div");
+      row.className = "history-item";
+      row.innerHTML = `
+        <div class="hi-left" style="display:flex; align-items:center; gap:10px;">
+          <div class="badge-chip${isUnlocked ? "" : " locked"}" style="width:36px; height:36px; font-size:16px; cursor:default;">${escapeHtml(b.emoji)}</div>
+          <div>
+            <div class="hi-title">${escapeHtml(b.name)}</div>
+            <div class="hi-date">${isUnlocked ? escapeHtml(t("badgeUnlockedLbl")) : escapeHtml(t("xpToGo", { n: Math.max(0, (b.xp || 0) - xp) }))}</div>
+          </div>
+        </div>
+        <div class="hi-right"><div class="hi-xp">${b.xp || 0} XP</div></div>`;
+      wrap.appendChild(row);
+    });
+  }
+
+  // ================= manage badges modal (parent only) =================
+  function openManageBadgesModal() {
+    removePendingBadgeId = null;
+    renderManageBadgesList();
+    document.getElementById("newBadgeName").value = "";
+    document.getElementById("newBadgeEmoji").value = "";
+    document.getElementById("newBadgeXp").value = "";
+    document.getElementById("manageBadgesModalBg").classList.add("open");
+  }
+  function closeManageBadgesModal() { document.getElementById("manageBadgesModalBg").classList.remove("open"); }
+
+  function renderManageBadgesList() {
+    const wrap = document.getElementById("badgesListWrap");
+    wrap.innerHTML = "";
+    badgesList().forEach(b => {
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex; gap:6px; align-items:center; background:rgba(0,0,0,0.03); border-radius:10px; padding:6px;";
+      row.innerHTML = `
+        <input type="text" data-role="emoji" value="${escapeHtml(b.emoji)}" maxlength="4"
+          style="width:40px; text-align:center; border:1px solid var(--line); border-radius:8px; padding:8px 4px; font-size:15px;">
+        <input type="text" data-role="name" value="${escapeHtml(b.name)}" maxlength="24"
+          style="flex:1; min-width:0; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:14px;">
+        <input type="text" inputmode="numeric" data-role="xp" value="${b.xp || 0}" maxlength="5"
+          style="width:64px; text-align:center; border:1px solid var(--line); border-radius:8px; padding:8px 4px; font-size:14px;">
+        <button class="btn btn-approve" data-role="save" style="flex-shrink:0;">${escapeHtml(t("saveBtn"))}</button>
+        <button class="btn btn-reject" data-role="remove" style="flex-shrink:0;">${escapeHtml(removePendingBadgeId === b.id ? t("removeConfirmBtn") : t("removeBtn"))}</button>
+      `;
+      row.querySelector('[data-role="save"]').addEventListener("click", () => {
+        const name = row.querySelector('[data-role="name"]').value.trim();
+        const emoji = row.querySelector('[data-role="emoji"]').value.trim() || "🏅";
+        const xp = parseInt(row.querySelector('[data-role="xp"]').value, 10);
+        saveBadge(b.id, name, emoji, xp);
+      });
+      row.querySelector('[data-role="remove"]').addEventListener("click", () => handleRemoveBadgeClick(b.id));
+      wrap.appendChild(row);
+    });
+  }
+
+  async function saveBadge(id, name, emoji, xp) {
+    if (!name) { toast(t("toastBadgeNameRequired")); return; }
+    if (!Number.isFinite(xp) || xp < 0) { toast(t("toastBadgeXpInvalid")); return; }
+    if (!db) { toast(t("toastNotConnected")); return; }
+    try {
+      await db.doc("badges/" + id).update({ name, emoji, xp });
+      toast(t("toastBadgeSaved"));
+    } catch (e) { console.error(e); toast(t("toastConflict")); }
+  }
+
+  async function addBadge() {
+    const name = document.getElementById("newBadgeName").value.trim();
+    const emoji = document.getElementById("newBadgeEmoji").value.trim() || "🏅";
+    const xp = parseInt(document.getElementById("newBadgeXp").value, 10);
+    if (!name) { toast(t("toastBadgeNameRequired")); return; }
+    if (!Number.isFinite(xp) || xp < 0) { toast(t("toastBadgeXpInvalid")); return; }
+    if (!db) { toast(t("toastNotConnected")); return; }
+    try {
+      await db.collection("badges").add({ name, emoji, xp, createdAt: Date.now() });
+      document.getElementById("newBadgeName").value = "";
+      document.getElementById("newBadgeEmoji").value = "";
+      document.getElementById("newBadgeXp").value = "";
+      toast(t("toastBadgeAdded"));
+    } catch (e) { console.error(e); toast(t("toastCouldntAdd")); }
+  }
+
+  function handleRemoveBadgeClick(id) {
+    if (removePendingBadgeId === id) {
+      removeBadge(id);
+    } else {
+      removePendingBadgeId = id;
+      renderManageBadgesList();
+    }
+  }
+
+  async function removeBadge(id) {
+    if (!db) { toast(t("toastNotConnected")); return; }
+    try {
+      await db.doc("badges/" + id).delete();
+      removePendingBadgeId = null;
+      toast(t("toastKidRemoved"));
+      renderManageBadgesList();
+    } catch (e) { console.error(e); toast(t("toastConflict")); }
+  }
+
+  // ================= manage kids modal =================
+  function openKidsModal() {
+    removePendingId = null;
+    renderKidsModalList();
+    document.getElementById("newKidName").value = "";
+    document.getElementById("newKidEmoji").value = "";
+    document.getElementById("kidsModalBg").classList.add("open");
+  }
+  function closeKidsModal() { document.getElementById("kidsModalBg").classList.remove("open"); }
+
+  function renderKidsModalList() {
+    const wrap = document.getElementById("kidsListWrap");
+    wrap.innerHTML = "";
+    kidsList().forEach(k => {
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex; gap:6px; align-items:center; background:rgba(0,0,0,0.03); border-radius:10px; padding:6px;";
+      row.innerHTML = `
+        <input type="text" data-role="emoji" value="${escapeHtml(k.emoji)}" maxlength="4"
+          style="width:44px; text-align:center; border:1px solid var(--line); border-radius:8px; padding:8px 4px; font-size:16px;">
+        <input type="text" data-role="name" value="${escapeHtml(k.name)}" maxlength="24"
+          style="flex:1; min-width:0; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:14px;">
+        <button class="btn btn-approve" data-role="save" style="flex-shrink:0;">${escapeHtml(t("saveBtn"))}</button>
+        <button class="btn btn-reject" data-role="remove" style="flex-shrink:0;">${escapeHtml(removePendingId === k.id ? t("removeConfirmBtn") : t("removeBtn"))}</button>
+      `;
+      row.querySelector('[data-role="save"]').addEventListener("click", () => {
+        const name = row.querySelector('[data-role="name"]').value.trim();
+        const emoji = row.querySelector('[data-role="emoji"]').value.trim() || "🧒";
+        saveKid(k.id, name, emoji);
+      });
+      row.querySelector('[data-role="remove"]').addEventListener("click", () => handleRemoveKidClick(k.id));
+      wrap.appendChild(row);
+    });
+  }
+
+  async function saveKid(id, name, emoji) {
+    if (!name) { toast(t("toastKidNameRequired")); return; }
+    if (!db) { toast(t("toastNotConnected")); return; }
+    try {
+      const existing = kidsCache[id] || {};
+      await db.doc("kids/" + id).update({ name, emoji, order: existing.order || 0 });
+      toast(t("toastKidSaved"));
+    } catch (e) { console.error(e); toast(t("toastConflict")); }
+  }
+
+  async function addKid() {
+    const name = document.getElementById("newKidName").value.trim();
+    const emoji = document.getElementById("newKidEmoji").value.trim() || "🧒";
+    if (!name) { toast(t("toastKidNameRequired")); return; }
+    if (!db) { toast(t("toastNotConnected")); return; }
+    try {
+      const nextOrder = kidsList().length;
+      await db.collection("kids").add({ name, emoji, order: nextOrder, createdAt: Date.now() });
+      document.getElementById("newKidName").value = "";
+      document.getElementById("newKidEmoji").value = "";
+      toast(t("toastKidAdded"));
+    } catch (e) { console.error(e); toast(t("toastCouldntAdd")); }
+  }
+
+  function handleRemoveKidClick(id) {
+    if (kidsList().length <= 1) { toast(t("toastKidsMin")); return; }
+    if (removePendingId === id) {
+      removeKid(id);
+    } else {
+      removePendingId = id;
+      renderKidsModalList();
+    }
+  }
+
+  async function removeKid(id) {
+    if (!db) { toast(t("toastNotConnected")); return; }
+    try {
+      await db.doc("kids/" + id).delete();
+      removePendingId = null;
+      if (activeKid === id) activeKid = null;
+      toast(t("toastKidRemoved"));
+      renderKidsModalList();
+    } catch (e) { console.error(e); toast(t("toastConflict")); }
+  }
+
+  // ================= PIN gate =================
+  function openPinModal(mode) {
+    pinMode = mode; // "enter" or "set"
+    document.getElementById("pinModalTitle").textContent = mode === "set" ? t("pinSetTitle") : t("pinEnterTitle");
+    document.getElementById("pinModalHint").textContent = mode === "set" ? t("pinCreateHint") : t("pinEnterHint");
+    document.getElementById("pinSubmitBtn").textContent = mode === "set" ? t("setPin") : t("unlock");
+    document.getElementById("pinInput").value = "";
+    document.getElementById("pinError").textContent = "";
+    document.getElementById("pinModalBg").classList.add("open");
+    setTimeout(() => document.getElementById("pinInput").focus(), 50);
+  }
+  function closePinModal() { document.getElementById("pinModalBg").classList.remove("open"); }
+
+  async function submitPin() {
+    const val = document.getElementById("pinInput").value.trim();
+    const errEl = document.getElementById("pinError");
+    if (!/^\d{4,6}$/.test(val)) { errEl.textContent = t("pinTooShort"); return; }
+
+    if (pinMode === "set") {
+      if (!db) { toast(t("toastNotConnected")); return; }
+      try {
+        await db.doc("settings/main").set({ parentPin: val, updatedAt: Date.now() });
+        parentPin = val;
+        parentUnlocked = true;
+        closePinModal();
+        setRole("parent");
+      } catch (e) {
+        console.error(e);
+        errEl.textContent = t("toastConflict");
+      }
+    } else {
+      if (val === parentPin) {
+        parentUnlocked = true;
+        closePinModal();
+        setRole("parent");
+      } else {
+        errEl.textContent = t("pinIncorrect");
+        document.getElementById("pinInput").value = "";
+        document.getElementById("pinInput").focus();
+      }
+    }
+  }
+
+  // ================= chat =================
+  function renderStampRow() {
+    const row = document.getElementById("stampRow");
+    row.innerHTML = "";
+    tStamps().forEach(s => {
+      const chip = document.createElement("button");
+      chip.className = "stamp-chip";
+      chip.textContent = s;
+      chip.onclick = () => sendMessage({ type: "stamp", content: s });
+      row.appendChild(chip);
+    });
+  }
+
+  function renderChat() {
+    const stream = document.getElementById("chatStream");
+    const atBottom = stream.scrollHeight - stream.scrollTop - stream.clientHeight < 60;
+    const msgs = Object.entries(messagesCache).map(([id, m]) => ({ id, ...m })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
+    stream.innerHTML = "";
+    if (msgs.length === 0) {
+      stream.innerHTML = `<div class="empty-col">${escapeHtml(t("emptyChat"))}</div>`;
+      return;
+    }
+    const myName = role === "parent" ? t("parentMode") : kidById(activeKid).name;
+    msgs.forEach(m => stream.appendChild(renderMessage(m, m.sender === myName)));
+    if (atBottom) stream.scrollTop = stream.scrollHeight;
+  }
+
+  function renderMessage(m, isMe) {
+    const wrap = document.createElement("div");
+    wrap.className = "msg" + (isMe ? " me" : "");
+    if (m.type === "badge_unlock") {
+      wrap.innerHTML = `
+        <div class="msg-sender">${escapeHtml(m.sender)} · ${timeStr(m.ts)}</div>
+        <div class="msg-card" style="text-align:center;">
+          <div style="font-size:26px; line-height:1;">${escapeHtml(m.badgeEmoji)}</div>
+          <div class="mc-title" style="margin-top:4px;">${escapeHtml(t("badgeUnlockedNote", { name: m.badgeName }))}</div>
+        </div>`;
+    } else if (m.type === "task_card") {
+      const statusLabel = m.status === "pending" ? t("cardSentReview") : m.status === "approved" ? t("cardApproved") : t("cardSentBack");
+      wrap.innerHTML = `
+        <div class="msg-sender">${escapeHtml(m.sender)} · ${timeStr(m.ts)}</div>
+        <div class="msg-card">
+          <div class="mc-title">🗒️ ${escapeHtml(m.taskTitle)}</div>
+          <div class="mc-status ${m.status}">${escapeHtml(statusLabel)}</div>
+        </div>`;
+    } else if (m.type === "voice") {
+      wrap.classList.add("msg-voice");
+      wrap.innerHTML = `
+        <div class="msg-sender">${escapeHtml(m.sender)} · ${timeStr(m.ts)}</div>
+        <div class="msg-bubble">🎤 <span>${escapeHtml(t("voiceClip", { n: m.durationSec || 0 }))}</span></div>`;
+    } else if (m.type === "stamp") {
+      wrap.classList.add("msg-stamp");
+      wrap.innerHTML = `
+        <div class="msg-sender">${escapeHtml(m.sender)} · ${timeStr(m.ts)}</div>
+        <div class="msg-bubble">${escapeHtml(m.content)}</div>`;
+    } else {
+      wrap.innerHTML = `
+        <div class="msg-sender">${escapeHtml(m.sender)} · ${timeStr(m.ts)}</div>
+        <div class="msg-bubble">${escapeHtml(m.content)}</div>`;
+    }
+    return wrap;
+  }
+
+  async function sendMessage({ type, content, durationSec }) {
+    if (!db) { toast(t("toastNotConnected")); return; }
+    const sender = role === "parent" ? t("parentMode") : kidById(activeKid).name;
+    try {
+      await db.collection("messages").add({ type, content: content || "", sender, senderRole: role, durationSec: durationSec || 0, ts: Date.now() });
+    } catch (e) {
+      console.error(e);
+      toast(t("toastMsgFail"));
+    }
+  }
+
+  function handleSend() {
+    const input = document.getElementById("chatInput");
+    const val = input.value.trim();
+    if (!val) return;
+    sendMessage({ type: "text", content: val });
+    input.value = "";
+  }
+
+  let recording = false;
+  function toggleVoice() {
+    const btn = document.getElementById("voiceBtn");
+    if (!recording) {
+      recording = true;
+      btn.classList.add("recording");
+      btn.textContent = "●";
+      toast(t("toastRecording"));
+    } else {
+      recording = false;
+      btn.classList.remove("recording");
+      btn.textContent = "🎤";
+      const dur = 2 + Math.floor(Math.random() * 8);
+      sendMessage({ type: "voice", durationSec: dur });
+    }
+  }
+
+  // ================= db wiring =================
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  async function connectDb() {
+    // The Firebase module script (standalone/GitHub Pages) and window.claude
+    // (Claude artifact) can both appear after this script's first run — the
+    // Firebase <script type="module"> in particular is deferred and may not
+    // have executed yet. Poll briefly for whichever shows up rather than
+    // checking once and giving up.
+    const deadline = Date.now() + 9000;
+    while (!window.__firebaseDbPromise && !(window.claude && typeof window.claude.use === "function")) {
+      if (Date.now() > deadline) return null;
+      await sleep(100);
+    }
+    if (window.__firebaseDbPromise) {
+      try {
+        const handle = await window.__firebaseDbPromise;
+        if (handle) return handle;
+      } catch (e) { console.error("Firebase connect failed", e); }
+    }
+    if (window.claude && typeof window.claude.use === "function") {
+      try {
+        const handle = await window.claude.use("db");
+        return handle || null;
+      } catch (e) {
+        console.error("db capability failed to load", e);
+        return null;
+      }
+    }
+    return null;
+  }
+
+  async function init() {
+    populateLangSelect();
+    applyStaticText();
+    setRole("child");
+    renderStampRow();
+    renderTasks();
+    renderChat();
+    renderStats();
+
+    db = await connectDb();
+    if (!db) { toast(t("toastNoSave")); return; }
+
+    try {
+      db.collection("kids").onSnapshot((snap) => {
+        kidsCache = {};
+        (snap.docs || snap || []).forEach(d => { kidsCache[d.id] = d.data ? d.data() : d; });
+        if (activeKid && !kidsCache[activeKid]) activeKid = null;
+        renderKidPicker();
+        renderTasks();
+        renderStats();
+        renderChat();
+        if (document.getElementById("kidsModalBg").classList.contains("open")) renderKidsModalList();
+      });
+    } catch (e) { console.error("kids subscription failed", e); }
+
+    try {
+      db.collection("badges").onSnapshot((snap) => {
+        badgesCache = {};
+        (snap.docs || snap || []).forEach(d => { badgesCache[d.id] = d.data ? d.data() : d; });
+        renderStats();
+        if (document.getElementById("badgesViewModalBg").classList.contains("open")) renderBadgesViewList();
+        if (document.getElementById("manageBadgesModalBg").classList.contains("open")) renderManageBadgesList();
+      });
+    } catch (e) { console.error("badges subscription failed", e); }
+
+    try {
+      db.doc("settings/main").onSnapshot((doc) => {
+        const data = doc && doc.data ? doc.data() : doc;
+        parentPin = data && data.parentPin ? data.parentPin : null;
+      });
+    } catch (e) { console.error("settings subscription failed", e); }
+
+    try {
+      db.collection("tasks").onSnapshot((snap) => {
+        tasksCache = {};
+        (snap.docs || snap || []).forEach(d => { tasksCache[d.id] = d.data ? d.data() : d; });
+        renderTasks();
+      });
+    } catch (e) { console.error("task subscription failed", e); }
+
+    try {
+      db.collection("messages").onSnapshot((snap) => {
+        messagesCache = {};
+        (snap.docs || snap || []).forEach(d => { messagesCache[d.id] = d.data ? d.data() : d; });
+        renderChat();
+      });
+    } catch (e) { console.error("message subscription failed", e); }
+
+    try {
+      db.collection("stats").onSnapshot((snap) => {
+        statsCache = {};
+        (snap.docs || snap || []).forEach(d => {
+          const data = d.data ? d.data() : d;
+          const kidId = d.id.replace(/^stats_/, "");
+          statsCache[kidId] = data;
+        });
+        renderStats();
+      });
+    } catch (e) { console.error("stats subscription failed", e); }
+
+    setTimeout(async () => {
+      if (Object.keys(kidsCache).length === 0) {
+        try {
+          for (const k of DEFAULT_KIDS) {
+            await db.doc("kids/" + k.id).set({ name: k.name, emoji: k.emoji, order: k.order, createdAt: Date.now() });
+          }
+        } catch (e) { /* fine if another viewer already seeded */ }
+      }
+      if (Object.keys(badgesCache).length === 0) {
+        try {
+          for (const b of DEFAULT_BADGES) {
+            await db.collection("badges").add({ name: b.name, emoji: b.emoji, xp: b.xp, createdAt: Date.now() });
+          }
+        } catch (e) { /* fine if another viewer already seeded */ }
+      }
+      if (Object.keys(tasksCache).length === 0) {
+        try {
+          await db.collection("tasks").add({ title: "Make your bed", assignedTo: "kid_yuki", xp: 10, status: "assigned", createdAt: Date.now() });
+          await db.collection("tasks").add({ title: "Finish math worksheet", assignedTo: "kid_yuki", xp: 20, status: "assigned", createdAt: Date.now() + 1 });
+          await db.collection("tasks").add({ title: "Practice piano 15 min", assignedTo: "kid_sora", xp: 20, status: "assigned", createdAt: Date.now() + 2 });
+        } catch (e) { /* fine if another viewer already seeded */ }
+      }
+    }, 900);
+  }
+
+  // ================= event bindings =================
+  document.getElementById("langSelect").addEventListener("change", (e) => setLang(e.target.value));
+  document.getElementById("roleChildBtn").addEventListener("click", () => setRole("child"));
+  document.getElementById("roleParentBtn").addEventListener("click", () => {
+    if (parentUnlocked) { setRole("parent"); return; }
+    // decide whether this is first-time setup or normal unlock once we know parentPin
+    openPinModal(parentPin ? "enter" : "set");
+  });
+  document.getElementById("lockBtn").addEventListener("click", lockParentMode);
+  document.getElementById("statBadgesCard").addEventListener("click", openBadgesViewModal);
+  document.getElementById("statBadgesCard").addEventListener("keydown", (e) => { if (e.key === "Enter") openBadgesViewModal(); });
+  document.getElementById("closeBadgesViewBtn").addEventListener("click", closeBadgesViewModal);
+  document.getElementById("badgesViewModalBg").addEventListener("click", (e) => { if (e.target.id === "badgesViewModalBg") closeBadgesViewModal(); });
+  document.getElementById("manageBadgesBtn").addEventListener("click", openManageBadgesModal);
+  document.getElementById("closeManageBadgesBtn").addEventListener("click", closeManageBadgesModal);
+  document.getElementById("manageBadgesModalBg").addEventListener("click", (e) => { if (e.target.id === "manageBadgesModalBg") closeManageBadgesModal(); });
+  document.getElementById("addBadgeBtn").addEventListener("click", addBadge);
+  document.getElementById("manageKidsBtn").addEventListener("click", openKidsModal);
+  document.getElementById("closeKidsModalBtn").addEventListener("click", closeKidsModal);
+  document.getElementById("kidsModalBg").addEventListener("click", (e) => { if (e.target.id === "kidsModalBg") closeKidsModal(); });
+  document.getElementById("addKidBtn").addEventListener("click", addKid);
+  document.getElementById("addTaskBtn").addEventListener("click", openTaskModal);
+  document.getElementById("cancelTaskBtn").addEventListener("click", closeTaskModal);
+  document.getElementById("createTaskBtn").addEventListener("click", createTask);
+  document.getElementById("taskModalBg").addEventListener("click", (e) => { if (e.target.id === "taskModalBg") closeTaskModal(); });
+  document.getElementById("pinModalBg").addEventListener("click", (e) => { if (e.target.id === "pinModalBg") closePinModal(); });
+  document.getElementById("pinCancelBtn").addEventListener("click", closePinModal);
+  document.getElementById("pinSubmitBtn").addEventListener("click", submitPin);
+  document.getElementById("pinInput").addEventListener("keydown", (e) => { if (e.key === "Enter") submitPin(); });
+  document.getElementById("sendBtn").addEventListener("click", handleSend);
+  document.getElementById("chatInput").addEventListener("keydown", (e) => { if (e.key === "Enter") handleSend(); });
+  document.getElementById("voiceBtn").addEventListener("click", toggleVoice);
+
+  init();
+})();
+</script>
+</body>
+</html>
